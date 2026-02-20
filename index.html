@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECUR-QUIZ | Training Suite (CH)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.4s ease-in-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hidden { display: none !important; }
+        
+        .loader {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #dc2626;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom UI Cards */
+        .info-card {
+            border-radius: 0.75rem;
+            padding: 1rem;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid transparent;
+        }
+        .card-meteo { border-left-color: #0ea5e9; } 
+        .card-type { border-left-color: #ef4444; } 
+        .card-victimes { border-left-color: #f97316; } 
+        .card-temps { border-left-color: #22c55e; } 
+        
+        /* Bouton Constantes Animation */
+        .pulse-btn {
+            animation: pulseBg 2s infinite;
+        }
+        @keyframes pulseBg {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+
+        /* Scope Monitor Effects (Style Nihon Kohden Life Scope) */
+        .scope-screen {
+            background-color: #111111;
+            box-shadow: inset 0 0 30px rgba(0,0,0,1);
+            border: 8px solid #334155;
+            border-radius: 12px;
+            position: relative;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .scope-header {
+            background-color: #222;
+            color: #aaa;
+            font-size: 0.7rem;
+            padding: 2px 10px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #444;
+        }
+        .scope-trace {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 5s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+        .question-glow {
+            box-shadow: 0 0 0 2px #e9d5ff, 0 0 15px rgba(216, 180, 254, 0.5);
+            border: 1px solid #d8b4fe;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="bg-slate-200 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- En-tête -->
+    <header class="bg-white border-b-4 border-red-600 p-4 shadow-sm sticky top-0 z-10 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="bg-red-600 text-white p-2 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-black tracking-tight text-slate-900 leading-none">SECUR-QUIZ</h1>
+                <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">TRAINING SUITE (CH)</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div id="session-stats" class="text-xs font-bold flex items-center gap-2 hidden">
+                <span class="bg-red-50 text-red-600 px-3 py-1 rounded-full flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    En cours
+                </span>
+                <span class="bg-slate-100 px-3 py-1 rounded-full text-slate-500">SCORE: <span id="score-correct" class="text-green-600">0</span></span>
+            </div>
+            <button onclick="resetApp()" class="text-slate-400 hover:text-red-600 transition" title="Retour à l'accueil">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-start justify-center p-2 md:p-6">
+        <div class="max-w-4xl w-full">
+            
+            <!-- VUE 1 : ACCUEIL & CONFIGURATION API -->
+            <div id="view-intro" class="bg-white rounded-xl shadow-md p-6 md:p-10 fade-in">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-4">Sélection du module</h2>
+                <p class="text-slate-600 mb-6 text-sm md:text-base leading-relaxed border-l-4 border-slate-200 pl-4">
+                    Les scénarios sont générés dynamiquement par IA selon les directives du Swiss Resuscitation Council (SRC), de l'Interassociation de sauvetage (IAS) et <strong class="text-red-600 font-bold">des protocoles PICA / HUG (Événements majeurs & Brûlures)</strong>.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="startMode('ias3')" class="text-left p-6 rounded-xl border border-slate-200 hover:border-blue-500 hover:shadow-lg transition duration-200 flex flex-col gap-4 group bg-slate-50">
+                        <div class="bg-blue-100 w-12 h-12 flex items-center justify-center rounded-lg group-hover:bg-blue-600 group-hover:text-white transition text-blue-600">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                        </div>
+                        <div>
+                            <span class="block font-black text-slate-800 text-xl mb-1">Mode IAS 3</span>
+                            <span class="text-sm text-slate-500 font-medium">Urgences vitales, ABCDE, Trauma. (Génération rapide)</span>
+                        </div>
+                    </button>
+
+                    <button onclick="startMode('catastrophe')" class="text-left p-6 rounded-xl border-2 border-red-100 hover:border-red-600 hover:shadow-lg transition duration-200 flex flex-col gap-4 group bg-red-50/30 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">MODULE AVANCÉ</div>
+                        <div class="bg-red-100 w-12 h-12 flex items-center justify-center rounded-lg group-hover:bg-red-600 group-hover:text-white transition text-red-600">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <div>
+                            <span class="block font-black text-slate-800 text-xl mb-1">Médecine de Catastrophe</span>
+                            <span class="text-sm text-slate-500 font-medium">Incident Majeur, Triage START, PMA, NACA. Cascade de 15 questions.</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VUE 2 : CHARGEMENT IA -->
+            <div id="view-loading" class="bg-white rounded-xl shadow-md p-10 flex flex-col items-center justify-center min-h-[400px] fade-in hidden text-center">
+                <div class="loader mb-6"></div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Génération du scénario en cours...</h3>
+                <p class="text-slate-500 text-sm max-w-sm" id="loading-text">Création de la situation initiale...</p>
+            </div>
+
+            <!-- VUE 3 : PRÉSENTATION CATASTROPHE -->
+            <div id="view-situation" class="fade-in hidden">
+                <div class="bg-slate-50 rounded-xl shadow-md overflow-hidden">
+                    <div class="bg-white p-6 md:p-8 border-b border-slate-200">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-green-500">BRIEFING INITIAL</span>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-red-600">PHASE 1/2</span>
+                        </div>
+                        <h2 id="sit-titre" class="text-2xl md:text-3xl font-black text-slate-900 leading-tight"></h2>
+                    </div>
+
+                    <div class="p-6 md:p-8">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            <div class="info-card card-meteo border border-slate-200 hover:shadow-md transition">
+                                <p class="text-[10px] font-bold text-slate-400 flex items-center gap-1 mb-1 uppercase tracking-wider"><span class="text-sky-500">☁</span> MÉTÉO</p>
+                                <p id="sit-meteo" class="font-bold text-slate-800 leading-tight text-lg"></p>
+                            </div>
+                            <div class="info-card card-type border border-slate-200 hover:shadow-md transition">
+                                <p class="text-[10px] font-bold text-slate-400 flex items-center gap-1 mb-1 uppercase tracking-wider"><span class="text-red-500">⚠</span> TYPE</p>
+                                <p id="sit-type" class="font-bold text-slate-800 leading-tight text-lg"></p>
+                            </div>
+                            <div class="info-card card-victimes border border-slate-200 hover:shadow-md transition">
+                                <p class="text-[10px] font-bold text-slate-400 flex items-center gap-1 mb-1 uppercase tracking-wider"><span class="text-orange-500">👥</span> VICTIMES</p>
+                                <p id="sit-victimes" class="font-bold text-slate-800 leading-tight text-lg"></p>
+                            </div>
+                            <div class="info-card card-temps border border-slate-200 hover:shadow-md transition">
+                                <p class="text-[10px] font-bold text-slate-400 flex items-center gap-1 mb-1 uppercase tracking-wider"><span class="text-green-500">⏱</span> TEMPS</p>
+                                <p id="sit-temps" class="font-bold text-slate-800 leading-tight text-lg"></p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                            <div class="flex flex-col justify-between gap-4">
+                                <div>
+                                    <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full bg-red-600"></span> PRÉSENTATION
+                                    </h3>
+                                    <p id="sit-presentation" class="text-slate-700 font-medium"></p>
+                                </div>
+                            </div>
+                            <div class="border-t border-slate-100 pt-4">
+                                <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-slate-800"></span> CONTEXTE
+                                </h3>
+                                <p id="sit-contexte" class="text-slate-700 font-medium"></p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-end">
+                            <button onclick="startQuestionsPhase()" class="px-8 py-4 bg-slate-900 hover:bg-black text-white font-black rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2 transform hover:-translate-y-1">
+                                S'engager sur la zone <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VUE 4 : CASCADE DE QUESTIONS -->
+            <div id="view-quiz" class="fade-in hidden">
+                <div class="bg-[#dce0e3] rounded-xl shadow-md p-4 md:p-8 min-h-[600px]">
+                    
+                    <div class="flex justify-between items-center pb-4 mb-4">
+                        <div class="flex items-center gap-3">
+                            <span id="q-phase-badge" class="px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider bg-blue-200 text-blue-900"></span>
+                            <span class="text-xs font-bold text-red-600" id="q-number"></span>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-500 tracking-wider">UNE SEULE RÉPONSE</span>
+                    </div>
+
+                    <div class="question-glow rounded-xl p-6 md:p-8 mb-6 relative bg-white">
+                        <div class="absolute left-0 top-6 bottom-6 w-1 bg-slate-300 rounded-r"></div>
+                        <h3 id="question-text" class="text-xl md:text-2xl font-bold text-slate-800 leading-snug pl-2"></h3>
+
+                        <div id="warning-vitals-box" class="mt-6 flex items-center gap-2 text-red-600 font-bold text-sm hidden">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <span>Relevez les constantes vitales du patient pour pouvoir intervenir.</span>
+                        </div>
+                    </div>
+
+                    <div id="action-vitals-container" class="mb-6 flex justify-end hidden">
+                        <button id="btn-take-vitals" onclick="takeVitals()" class="px-6 py-3 rounded-lg shadow-sm flex items-center gap-2 font-bold text-sm transition-all border border-slate-300 bg-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            <span id="btn-vitals-text">Reprendre les constantes</span>
+                        </button>
+                    </div>
+
+                    <div id="vitals-toggle-wrapper" class="mb-2 flex justify-end hidden">
+                        <button onclick="toggleVitalsVisibility()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded shadow-sm flex items-center gap-2 font-bold transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            <span id="btn-toggle-vitals-text">Masquer les constantes</span>
+                        </button>
+                    </div>
+
+                    <!-- Scope Monitor -->
+                    <div id="vitals-container" class="mb-6 scope-screen hidden flex-col shadow-2xl fade-in overflow-hidden">
+                        <div class="scope-header">
+                            <span>BED-001</span>
+                            <span>Adult</span>
+                            <span id="scope-time">11:05</span>
+                        </div>
+                        <div class="p-3">
+                            <!-- Ligne 1 : ECG (HR) -->
+                            <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-2">
+                                <div class="w-1/3 md:w-1/4">
+                                    <p class="text-[10px] text-[#84cc16] font-bold tracking-widest leading-none mb-1">HR <span class="text-gray-500 text-[8px]">[bpm]</span></p>
+                                    <p id="vital-fc" class="font-bold text-5xl md:text-6xl text-[#84cc16] leading-none tracking-tighter">80</p>
+                                </div>
+                                <div class="w-2/3 md:w-3/4 pl-2 opacity-90">
+                                    <svg class="w-full h-12 scope-trace" viewBox="0 0 300 40" fill="none" stroke="#84cc16" stroke-width="1.5">
+                                        <path d="M 0 20 L 20 20 L 25 10 L 30 35 L 35 20 L 70 20 L 75 10 L 80 35 L 85 20 L 120 20 L 125 10 L 130 35 L 135 20 L 170 20 L 175 10 L 180 35 L 185 20 L 220 20 L 225 10 L 230 35 L 235 20 L 270 20 L 275 10 L 280 35 L 285 20 L 300 20"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Ligne 2 : Pleth (SpO2) -->
+                            <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-2">
+                                <div class="w-1/3 md:w-1/4">
+                                    <p class="text-[10px] text-[#06b6d4] font-bold tracking-widest leading-none mb-1">SpO2 <span class="text-gray-500 text-[8px]">%</span></p>
+                                    <p id="vital-spo2" class="font-bold text-5xl md:text-6xl text-[#06b6d4] leading-none tracking-tighter">97</p>
+                                </div>
+                                <div class="w-2/3 md:w-3/4 pl-2 opacity-90">
+                                    <svg class="w-full h-12 scope-trace" viewBox="0 0 300 40" fill="none" stroke="#06b6d4" stroke-width="1.5">
+                                        <path d="M 0 25 Q 15 5, 25 15 T 50 25 Q 65 5, 75 15 T 100 25 Q 115 5, 125 15 T 150 25 Q 165 5, 175 15 T 200 25 Q 215 5, 225 15 T 250 25 Q 265 5, 275 15 T 300 25"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Ligne 3 : NIBP, CO2/RR, GCS -->
+                            <div class="flex items-center justify-between pt-1">
+                                <div class="w-1/2">
+                                    <p class="text-[10px] text-[#ef4444] font-bold tracking-widest leading-none mb-1">NIBP <span class="text-gray-500 text-[8px]">[mmHg]</span></p>
+                                    <p id="vital-ta" class="font-bold text-3xl md:text-5xl text-[#ef4444] leading-none tracking-tighter">119/78</p>
+                                </div>
+                                <div class="w-1/4 border-l border-gray-700 pl-4">
+                                    <p class="text-[10px] text-white font-bold tracking-widest leading-none mb-1">CO2-RR <span class="text-gray-500 text-[8px]">[min]</span></p>
+                                    <p id="vital-fr" class="font-bold text-3xl md:text-5xl text-white leading-none tracking-tighter">29</p>
+                                </div>
+                                <div class="w-1/4 border-l border-gray-700 pl-4">
+                                    <p class="text-[10px] text-[#eab308] font-bold tracking-widest leading-none mb-1">GCS</p>
+                                    <p id="vital-gcs" class="font-bold text-3xl md:text-5xl text-[#eab308] leading-none tracking-tighter">15</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="answers-container" class="space-y-4 mt-2">
+                        <!-- Réponses -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VUE 5 : FEEDBACK IMMÉDIAT -->
+            <div id="view-feedback" class="fade-in hidden">
+                <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                    <div id="feedback-header" class="mb-6 p-5 rounded-xl flex items-start gap-4 border-2">
+                        <div id="feedback-icon" class="mt-1"></div>
+                        <div class="flex-grow">
+                            <h3 id="feedback-title" class="text-xl font-black mb-1 tracking-tight">Résultat</h3>
+                            <p id="feedback-user-answer" class="text-sm font-bold opacity-80 mb-3"></p>
+                            
+                            <div class="bg-white/50 p-4 rounded-lg mt-2">
+                                <h4 class="text-[10px] font-black uppercase tracking-widest mb-2 opacity-70">Débriefing Instructeur</h4>
+                                <p id="feedback-explanation" class="text-sm font-medium leading-relaxed"></p>
+                                <p id="feedback-naca" class="text-sm font-black mt-2 hidden">Score NACA estimé : <span id="naca-val"></span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button onclick="nextQuestion()" class="px-8 py-4 bg-slate-900 hover:bg-black text-white font-black rounded-xl shadow-md transition-all flex items-center gap-2">
+                            Continuer l'intervention <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VUE 6 : RÉSULTATS FINAUX -->
+            <div id="view-results" class="fade-in hidden">
+                <div class="bg-white rounded-xl shadow-md p-6 md:p-10 text-center">
+                    <h2 class="text-3xl font-black text-slate-900 mb-2">Fin de la session</h2>
+                    <p class="text-slate-500 font-medium mb-8">Bilan opérationnel et clinique</p>
+
+                    <div class="inline-block p-6 rounded-2xl bg-slate-50 border-4 border-slate-100 mb-8">
+                        <span id="final-score" class="text-5xl font-black text-slate-800">0/15</span>
+                    </div>
+
+                    <div id="improvement-tips-container" class="text-left bg-blue-50 p-6 rounded-xl border border-blue-200 mb-6 hidden">
+                        <h3 class="font-bold text-blue-900 mb-3 border-b border-blue-200 pb-2 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Domaines à consolider
+                        </h3>
+                        <ul id="improvement-tips-list" class="space-y-2 text-sm text-blue-800 font-medium"></ul>
+                    </div>
+
+                    <div id="mistakes-container" class="text-left bg-red-50 p-6 rounded-xl border border-red-100 hidden">
+                        <h3 class="font-bold text-red-800 mb-4 border-b border-red-200 pb-2">Actions à corriger :</h3>
+                        <ul id="mistakes-list" class="space-y-3 text-sm text-red-900"></ul>
+                    </div>
+
+                    <button onclick="resetApp()" class="mt-8 px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl shadow-md transition-all">
+                        Terminer le service
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Erreur -->
+            <div id="error-box" class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded hidden">
+                <strong class="font-bold">Erreur :</strong>
+                <span class="block sm:inline" id="error-message"></span>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- ÉTAT GLOBAL ---
+        let sessionData = null; 
+        let currentQuestionIndex = 0;
+        let stats = { correct: 0, total: 0, mistakes: [] };
+        let currentMode = '';
+        let seenPatients = new Set(); 
+        let currentPatientId = null;
+        const apiKey = ""; // Clé fournie par l'environnement
+
+        const views = {
+            intro: document.getElementById('view-intro'),
+            loading: document.getElementById('view-loading'),
+            situation: document.getElementById('view-situation'),
+            quiz: document.getElementById('view-quiz'),
+            feedback: document.getElementById('view-feedback'),
+            results: document.getElementById('view-results')
+        };
+        const errorBox = document.getElementById('error-box');
+
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('scope-time').innerText = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        }, 1000);
+
+        function hideAllViews() {
+            Object.values(views).forEach(v => v.classList.add('hidden'));
+            errorBox.classList.add('hidden');
+        }
+
+        function resetApp() {
+            hideAllViews();
+            views.intro.classList.remove('hidden');
+            document.getElementById('session-stats').classList.add('hidden');
+        }
+
+        function updateStatsUI() {
+            document.getElementById('score-correct').innerText = stats.correct;
+            document.getElementById('session-stats').classList.remove('hidden');
+        }
+
+        function startMode(mode) {
+            currentMode = mode;
+            stats = { correct: 0, total: 0, mistakes: [] };
+            currentQuestionIndex = 0;
+            seenPatients.clear(); 
+            currentPatientId = null;
+            
+            hideAllViews();
+            views.loading.classList.remove('hidden');
+            
+            const loadingText = document.getElementById('loading-text');
+            if(mode === 'catastrophe') {
+                loadingText.innerText = "Création du briefing de catastrophe, génération des victimes et de la cascade de 15 questions...";
+            } else {
+                loadingText.innerText = "Génération du scénario clinique...";
+            }
+
+            fetchScenarioFromAI(mode);
+        }
+
+        // --- APPEL API ---
+        async function fetchScenarioFromAI(mode) {
+            // Construction de l'URL avec la clé API de l'environnement
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            let systemPrompt = `Tu es un expert instructeur en secourisme suisse (certifié IAS, SRC, médecine de catastrophe). Utilise des localisations en Suisse romande (ex: Genève, HUG).
+            
+            INSTRUCTIONS CLINIQUES ET DOCTRINALES OBLIGATOIRES (ISSUES DES COURS PICA / BSC GENÈVE) :
+            1. Événement Majeur : Déclenchement par médecin cadre BSC via 144. Message d'ambiance type METHANE. Au PMA : le triage est fait par le Médecin trieur assisté d'un secouriste. Le secouriste fait le 1er/2ème bilan, prend les paramètres, soutient, remplit le dossier médical et gère impérativement le "TRACER" (recensement obligatoire de TOUS les patients entrants et sortants).
+            2. Brûlures : Refroidir la brûlure, pas le brûlé ! Eau à 15°C ou gel. Ne pas refroidir si > 15 minutes post-brûlure. Max 5 min pour un petit enfant. Refroidir UNIQUEMENT les petites surfaces (< 20%). NE JAMAIS refroidir un malade inconscient ou choqué. L'orientation des grands brûlés se fait vers le CHUV ou USZ (Zurich).`;
+            
+            let userPrompt = "";
+            let schemaProperties = {};
+
+            if (mode === 'catastrophe') {
+                systemPrompt += ` Tu dois créer un Incident Majeur avec une cascade logique de décisions TRÈS COHÉRENTE. 
+                Phase 1 : AMBULANCIERS (1er équipage arrivé sur le terrain. Focus: METHANE, sécurité, triage START rapide). 
+                Phase 2 : SECOURISTES (Renforts travaillant au Poste Médical Avancé - PMA). 
+                IMPORTANT : Le niveau de maîtrise est "Secouriste" (Niveau IAS 3). Tu ne dois proposer AUCUN acte médical lourd (pas d'intubation, pas de pose de voie veineuse, pas de médicaments sur ordonnance). Les bonnes réponses doivent privilégier les gestes de sauvetage de base (BLS, oxygène, hémostase, PLS) et la demande systématique de l'aval d'un médecin/paramédic pour les actes avancés.
+                Pour assurer une stricte cohérence au PMA, invente et identifie clairement 2 patients en les nommant EXACTEMENT "Patient A" et "Patient B". Assure-toi d'inclure au moins un patient avec des brûlures pour tester les protocoles PICA. Base TOUTES les questions de la phase PMA sur l'évolution clinique, les constantes, et le traitement de CES MÊMES patients par les secouristes.`;
+                
+                userPrompt = "Génère un scénario complet de médecine de catastrophe comprenant exactement 15 questions en cascade. Les 5 premières questions concernent le 1er équipage sur les lieux. Les 10 suivantes te placent dans le rôle des secouristes au Poste Médical Avancé avec les patients A et B (dont au moins un brûlé). Chaque question doit avoir 3 réponses possibles (1 correcte niveau secouriste, 2 fausses). Pour la phase PMA, génère toujours les constantes vitales des patients.";
+                
+                schemaProperties = {
+                    scenario_global: {
+                        type: "OBJECT",
+                        properties: {
+                            titre: { type: "STRING" }, meteo: { type: "STRING" }, type_incident: { type: "STRING" }, victimes_estimees: { type: "STRING" }, temps: { type: "STRING" }, presentation: { type: "STRING" }, contexte: { type: "STRING" }
+                        },
+                        required: ["titre", "meteo", "type_incident", "victimes_estimees", "temps", "presentation", "contexte"]
+                    },
+                    questions: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                phase: { type: "STRING" },
+                                texte: { type: "STRING" },
+                                constantes_medicales: { 
+                                    type: "OBJECT", 
+                                    properties: { fc: { type: "STRING" }, ta: { type: "STRING" }, spo2: { type: "STRING" }, fr: { type: "STRING" }, gcs: { type: "STRING" } }
+                                },
+                                naca_attendu: { type: "STRING" },
+                                reponses: {
+                                    type: "ARRAY",
+                                    items: {
+                                        type: "OBJECT",
+                                        properties: { texte: { type: "STRING" }, estCorrect: { type: "BOOLEAN" }, explication: { type: "STRING" } },
+                                        required: ["texte", "estCorrect", "explication"]
+                                    }
+                                }
+                            },
+                            required: ["phase", "texte", "reponses"]
+                        }
+                    }
+                };
+            } else {
+                userPrompt = "Génère 1 scénario clinique de niveau IAS 3 (Trauma ou médical). Décris le scénario global, puis crée 1 question sur la première action à entreprendre avec 3 choix (1 juste niveau secouriste, 2 faux).";
+                schemaProperties = {
+                    scenario_global: { type: "OBJECT", properties: { titre: { type: "STRING" }, meteo: { type: "STRING" }, type_incident: { type: "STRING" }, victimes_estimees: { type: "STRING" }, temps: { type: "STRING" }, presentation: { type: "STRING" }, contexte: { type: "STRING" } } },
+                    questions: { type: "ARRAY", items: { type: "OBJECT", properties: { phase: { type: "STRING" }, texte: { type: "STRING" }, reponses: { type: "ARRAY", items: { type: "OBJECT", properties: { texte: { type: "STRING" }, estCorrect: { type: "BOOLEAN" }, explication: { type: "STRING" } } } } } } }
+                };
+            }
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    temperature: 0.7,
+                    responseMimeType: "application/json",
+                    responseSchema: { type: "OBJECT", properties: schemaProperties, required: ["scenario_global", "questions"] }
+                }
+            };
+
+            const fetchWithRetry = async (url, options, retries = 5) => {
+                const delays = [1000, 2000, 4000, 8000, 16000];
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        const response = await fetch(url, options);
+                        if (!response.ok) {
+                            // Gestion spécifique pour les erreurs de clé API
+                            if (response.status === 400 || response.status === 403) {
+                                throw new Error("Clé API invalide ou accès refusé. Vérifiez votre clé Gemini.");
+                            }
+                            throw new Error(`HTTP error: ${response.status}`);
+                        }
+                        return await response.json();
+                    } catch (e) {
+                        if (i === retries - 1 || e.message.includes("Clé API invalide")) throw e;
+                        await new Promise(res => setTimeout(res, delays[i]));
+                    }
+                }
+            };
+
+            try {
+                const result = await fetchWithRetry(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!rawText) throw new Error("Réponse vide de l'IA.");
+                
+                sessionData = JSON.parse(rawText);
+                sessionData.questions.forEach(q => { q.reponses = q.reponses.sort(() => Math.random() - 0.5); });
+                showSituationPresentation();
+            } catch (error) {
+                console.error(error);
+                hideAllViews();
+                views.intro.classList.remove('hidden');
+                document.getElementById('error-message').innerText = error.message.includes("Clé API invalide") ? error.message : "Impossible de générer le scénario complet. Veuillez réessayer.";
+                errorBox.classList.remove('hidden');
+            }
+        }
+
+        // --- AFFICHAGE SITUATION INITIALE ---
+        function showSituationPresentation() {
+            hideAllViews();
+            views.situation.classList.remove('hidden');
+
+            const g = sessionData.scenario_global;
+            document.getElementById('sit-titre').innerText = g.titre || "Intervention en cours";
+            document.getElementById('sit-meteo').innerText = g.meteo || "Inconnu";
+            document.getElementById('sit-type').innerText = g.type_incident || "Médical";
+            document.getElementById('sit-victimes').innerText = g.victimes_estimees || "1";
+            document.getElementById('sit-temps').innerText = g.temps || "T0";
+            document.getElementById('sit-presentation').innerText = g.presentation || "Vous arrivez sur les lieux.";
+            document.getElementById('sit-contexte').innerText = g.contexte || "";
+        }
+
+        function startQuestionsPhase() {
+            renderQuestion();
+        }
+
+        function takeVitals() {
+            const vitalsContainer = document.getElementById('vitals-container');
+            const toggleWrapper = document.getElementById('vitals-toggle-wrapper');
+            
+            if (currentPatientId) {
+                seenPatients.add(currentPatientId);
+            }
+            
+            vitalsContainer.classList.remove('hidden');
+            vitalsContainer.classList.add('flex');
+            
+            vitalsContainer.classList.remove('fade-in');
+            void vitalsContainer.offsetWidth; 
+            vitalsContainer.classList.add('fade-in');
+
+            toggleWrapper.classList.remove('hidden');
+            document.getElementById('btn-toggle-vitals-text').innerText = "Masquer les constantes";
+
+            const lockedBtns = document.querySelectorAll('.locked-btn');
+            lockedBtns.forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60', 'cursor-not-allowed', 'bg-slate-200', 'border-slate-300', 'text-slate-400', 'locked-btn');
+                btn.classList.add('bg-[#e9ecef]', 'border-[#dce0e3]', 'text-slate-700', 'hover:border-slate-400', 'hover:bg-white', 'hover:shadow-md', 'cursor-pointer');
+                
+                const icon = btn.querySelector('.icon-lock');
+                if(icon) icon.remove();
+            });
+
+            document.getElementById('warning-vitals-box').classList.add('hidden');
+        }
+
+        function toggleVitalsVisibility() {
+            const vitals = document.getElementById('vitals-container');
+            const textSpan = document.getElementById('btn-toggle-vitals-text');
+            
+            if (vitals.classList.contains('hidden')) {
+                vitals.classList.remove('hidden');
+                vitals.classList.add('flex');
+                textSpan.innerText = "Masquer les constantes";
+            } else {
+                vitals.classList.add('hidden');
+                vitals.classList.remove('flex');
+                textSpan.innerText = "Afficher les constantes";
+            }
+        }
+
+        function renderQuestion() {
+            if (currentQuestionIndex >= sessionData.questions.length) {
+                showFinalResults();
+                return;
+            }
+
+            hideAllViews();
+            views.quiz.classList.remove('hidden');
+            updateStatsUI();
+            
+            document.getElementById('vitals-toggle-wrapper').classList.add('hidden');
+
+            const q = sessionData.questions[currentQuestionIndex];
+            const totalQ = sessionData.questions.length;
+            
+            currentPatientId = null;
+            const patientMatch = q.texte.match(/Patient[e]?\s+([A-B])/i);
+            if (patientMatch) {
+                currentPatientId = patientMatch[1].toUpperCase();
+            }
+
+            const phaseBadge = document.getElementById('q-phase-badge');
+            const vitalsContainer = document.getElementById('vitals-container');
+            const actionVitals = document.getElementById('action-vitals-container');
+            const btnVitalsText = document.getElementById('btn-vitals-text');
+            const btnTakeVitals = document.getElementById('btn-take-vitals');
+            const warningVitalsBox = document.getElementById('warning-vitals-box');
+            
+            let requiresVitals = false;
+
+            if (q.phase && (q.phase.toLowerCase() === 'pma' || q.phase.toLowerCase().includes('secouriste'))) {
+                phaseBadge.innerText = "PHASE 2 : SECOURISTES AU PMA";
+                phaseBadge.className = "px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider bg-blue-200 text-blue-900";
+                
+                if (q.constantes_medicales && Object.keys(q.constantes_medicales).length > 0) {
+                    let isFirstEncounter = currentPatientId ? !seenPatients.has(currentPatientId) : true;
+                    requiresVitals = isFirstEncounter;
+                    
+                    vitalsContainer.classList.add('hidden');
+                    vitalsContainer.classList.remove('flex');
+                    actionVitals.classList.remove('hidden');
+                    
+                    if (isFirstEncounter) {
+                        btnVitalsText.innerText = "Monitorer le patient";
+                        btnTakeVitals.className = "pulse-btn px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow-md flex items-center gap-2 transition-all";
+                        warningVitalsBox.classList.remove('hidden');
+                    } else {
+                        btnVitalsText.innerText = "Reprendre les constantes";
+                        btnTakeVitals.className = "px-6 py-3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold rounded-lg shadow-sm flex items-center gap-2 transition-all";
+                        warningVitalsBox.classList.add('hidden');
+                    }
+
+                    document.getElementById('vital-fc').innerText = q.constantes_medicales.fc || '--';
+                    document.getElementById('vital-ta').innerText = q.constantes_medicales.ta || '--';
+                    document.getElementById('vital-spo2').innerText = q.constantes_medicales.spo2 || '--';
+                    document.getElementById('vital-fr').innerText = q.constantes_medicales.fr || '--';
+                    document.getElementById('vital-gcs').innerText = q.constantes_medicales.gcs || '--';
+                } else {
+                    vitalsContainer.classList.add('hidden');
+                    vitalsContainer.classList.remove('flex');
+                    actionVitals.classList.add('hidden');
+                    warningVitalsBox.classList.add('hidden');
+                }
+            } else {
+                phaseBadge.innerText = "PHASE 1 : AMBULANCIERS (1ER SUR SITE)";
+                phaseBadge.className = "px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider bg-red-200 text-red-900";
+                vitalsContainer.classList.add('hidden');
+                vitalsContainer.classList.remove('flex');
+                actionVitals.classList.add('hidden');
+                warningVitalsBox.classList.add('hidden');
+            }
+
+            document.getElementById('q-number').innerText = `QUESTION ${currentQuestionIndex + 1}/${totalQ}`;
+            document.getElementById('question-text').innerText = q.texte;
+
+            const container = document.getElementById('answers-container');
+            container.innerHTML = '';
+
+            q.reponses.forEach((rep) => {
+                const btn = document.createElement('button');
+                
+                const baseClasses = "answer-btn w-full text-left p-5 rounded-xl border-2 transition duration-200 font-bold group relative overflow-hidden flex items-center justify-between";
+                const lockedClasses = "opacity-60 cursor-not-allowed bg-slate-200 border-slate-300 text-slate-400 locked-btn";
+                const activeClasses = "bg-[#e9ecef] border-[#dce0e3] text-slate-700 hover:border-slate-400 hover:bg-white hover:shadow-md cursor-pointer";
+                
+                btn.className = `${baseClasses} ${requiresVitals ? lockedClasses : activeClasses}`;
+                if (requiresVitals) btn.disabled = true;
+                
+                const iconSvg = requiresVitals 
+                    ? `<svg class="h-5 w-5 text-red-400 icon-lock" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>`
+                    : ``;
+
+                btn.innerHTML = `<span>${rep.texte}</span> ${iconSvg}`;
+                btn.onclick = () => handleAnswer(rep, q);
+                container.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedAnswer, questionData) {
+            stats.total++;
+            
+            if (selectedAnswer.estCorrect) {
+                stats.correct++;
+            } else {
+                stats.mistakes.push({
+                    q: questionData.texte,
+                    a: selectedAnswer.texte,
+                    ex: selectedAnswer.explication
+                });
+            }
+
+            hideAllViews();
+            views.feedback.classList.remove('hidden');
+
+            const header = document.getElementById('feedback-header');
+            const iconContainer = document.getElementById('feedback-icon');
+            const title = document.getElementById('feedback-title');
+            
+            document.getElementById('feedback-user-answer').innerText = selectedAnswer.texte;
+            document.getElementById('feedback-explanation').innerText = selectedAnswer.explication;
+
+            const nacaEl = document.getElementById('feedback-naca');
+            if (questionData.naca_attendu) {
+                nacaEl.classList.remove('hidden');
+                document.getElementById('naca-val').innerText = questionData.naca_attendu;
+            } else {
+                nacaEl.classList.add('hidden');
+            }
+
+            if (selectedAnswer.estCorrect) {
+                header.className = "mb-6 p-5 rounded-xl flex items-start gap-4 border-2 bg-green-50 border-green-200 text-green-900";
+                title.innerText = "Décision Validée";
+                iconContainer.innerHTML = `<div class="bg-green-200 p-2 rounded-full"><svg class="h-6 w-6 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div>`;
+            } else {
+                header.className = "mb-6 p-5 rounded-xl flex items-start gap-4 border-2 bg-red-50 border-red-200 text-red-900";
+                title.innerText = "Action Inappropriée (Niveau Secouriste)";
+                iconContainer.innerHTML = `<div class="bg-red-200 p-2 rounded-full"><svg class="h-6 w-6 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></div>`;
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            renderQuestion();
+        }
+
+        function getImprovementTips(mistakes) {
+            if (mistakes.length === 0) return ["Excellente maîtrise opérationnelle ! Continuez à maintenir vos connaissances à jour."];
+            
+            let domains = new Set();
+            mistakes.forEach(m => {
+                const text = (m.q + " " + m.ex).toLowerCase();
+                if (text.includes('triage') || text.includes('start') || text.includes('naca') || text.includes('pma') || text.includes('catastrophe')) {
+                    domains.add("Triage et doctrine d'incident majeur (START/NACA)");
+                }
+                if (text.includes('brûlure') || text.includes('feu') || text.includes('thermique') || text.includes('eau') || text.includes('refroidir')) {
+                    domains.add("Prise en charge des brûlures (Protocole PICA)");
+                }
+                if (text.includes('methane') || text.includes('sécurité') || text.includes('danger') || text.includes('alarme')) {
+                    domains.add("Sécurité de scène et transmission de l'alarme (METHANE)");
+                }
+                if (text.includes('abcde') || text.includes('airway') || text.includes('breathing') || text.includes('circulation') || text.includes('oxygèn')) {
+                    domains.add("Évaluation systématisée ABCDE et gestes vitaux (BLS)");
+                }
+                if (text.includes('tracer') || text.includes('recensement') || text.includes('évacuation') || text.includes('flux')) {
+                    domains.add("Gestion des flux et concept TRACER au PMA");
+                }
+            });
+
+            if (domains.size === 0) {
+                domains.add("Révision générale des protocoles de base IAS 3");
+            }
+            return Array.from(domains);
+        }
+
+        function showFinalResults() {
+            hideAllViews();
+            views.results.classList.remove('hidden');
+            document.getElementById('session-stats').classList.add('hidden');
+
+            document.getElementById('final-score').innerText = `${stats.correct}/${stats.total}`;
+
+            const mistakesContainer = document.getElementById('mistakes-container');
+            const mistakesList = document.getElementById('mistakes-list');
+            const tipsContainer = document.getElementById('improvement-tips-container');
+            const tipsList = document.getElementById('improvement-tips-list');
+            
+            const tips = getImprovementTips(stats.mistakes);
+            tipsList.innerHTML = tips.map(t => `<li class="flex items-start gap-2"><span class="text-blue-500">▹</span> ${t}</li>`).join('');
+            tipsContainer.classList.remove('hidden');
+            
+            if (stats.mistakes.length > 0) {
+                mistakesContainer.classList.remove('hidden');
+                mistakesList.innerHTML = stats.mistakes.map(m => `
+                    <li class="border-b border-red-200 pb-2 last:border-0">
+                        <strong>Q:</strong> ${m.q}<br>
+                        <span class="text-red-600 line-through">Choix: ${m.a}</span><br>
+                        <span class="text-slate-700 block mt-1 bg-white/50 p-2 rounded text-xs font-medium">↳ ${m.ex}</span>
+                    </li>
+                `).join('');
+            } else {
+                mistakesContainer.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
