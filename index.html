@@ -207,6 +207,221 @@ header {
 }
 @media(max-width:580px){ .mode-grid{ grid-template-columns:1fr; } }
 
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE SYSTEM
+   Breakpoints:
+   · ≥1024px  — PC : layout 2 colonnes dans le quiz
+   · 768–1024 — Tablette paysage
+   · 480–768  — Tablette portrait / grand mobile
+   · <480px   — Mobile
+═══════════════════════════════════════════════════════════════ */
+
+/* ── PC LARGE ≥1024px : 2 colonnes quiz ─────────────────────── */
+@media(min-width:1024px){
+  .view { max-width:1040px; padding:32px 24px 64px; }
+
+  /* Layout grille 2 colonnes pour le quiz */
+  #view-quiz {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "topbar   topbar"
+      "pname    pname"
+      "monitor  question"
+      "actions  choices";
+    column-gap:24px;
+    align-items:start;
+  }
+  #view-quiz .quiz-topbar          { grid-area: topbar; }
+  #view-quiz #patient-name-display { grid-area: pname; }
+  #view-quiz .monitor-shell        { grid-area: monitor; margin-bottom:0; }
+  #view-quiz #monitor-actions      { grid-area: actions; margin-bottom:0; }
+  #view-quiz .question-card        { grid-area: question; margin-bottom:14px; }
+  #view-quiz #choices-container    { grid-area: choices; }
+
+  /* Plus grande valeur vitale sur grand écran */
+  .vital-value { font-size:2rem; }
+  .vital-row { grid-template-columns:80px 1fr 96px; }
+
+  /* Intro : max-width élargi */
+  #view-intro .mode-grid { max-width:720px; }
+  .intro-sub { max-width:600px; }
+
+  /* Résultats en 2 colonnes */
+  #view-results .results-top { padding:32px 36px; gap:40px; }
+  .score-ring-wrap { width:140px; height:140px; }
+  .score-ring-svg  { width:140px; height:140px; }
+}
+
+/* ── TABLETTE PAYSAGE 768–1024px ─────────────────────────────── */
+@media(min-width:768px) and (max-width:1023px){
+  .view { max-width:760px; padding:24px 20px 56px; }
+  .vital-value { font-size:1.6rem; }
+}
+
+/* ── TABLETTE PORTRAIT / GRAND MOBILE 480–767px ─────────────── */
+@media(max-width:767px){
+  .view { padding:20px 14px 48px; }
+
+  /* Header compact */
+  header { padding:0 16px; }
+  .logo-text { font-size:1.05rem; }
+  .logo-sub  { display:none; }
+
+  /* Intro */
+  #view-intro { padding-top:36px; }
+  .intro-sub  { font-size:.9rem; margin-bottom:36px; }
+
+  /* Monitor — vital values légèrement réduites */
+  .vital-value { font-size:1.45rem; }
+  .vital-row   { grid-template-columns:64px 1fr 80px; }
+
+  /* Quiz topbar — progress prend toute la largeur */
+  .quiz-topbar { gap:8px; }
+  .progress-group { max-width:100%; }
+
+  /* Question card */
+  .question-card { padding:15px 16px; }
+  .question-text { font-size:.93rem; }
+
+  /* Choices */
+  .choice-btn { padding:12px 14px; font-size:.86rem; }
+
+  /* Feedback */
+  .feedback-wrap { padding:18px 16px; }
+  .feedback-verdict { font-size:1rem; }
+
+  /* Results */
+  .results-top { padding:20px; gap:20px; }
+  .score-ring-wrap { width:100px; height:100px; flex-shrink:0; }
+  .score-ring-svg  { width:100px; height:100px; }
+  .score-number { font-size:1.75rem; }
+  .results-title { font-size:1.25rem; }
+}
+
+/* ── MOBILE <480px ───────────────────────────────────────────── */
+@media(max-width:479px){
+  html { font-size:15px; }
+  .view { padding:16px 12px 40px; }
+
+  /* Header : masquer la status pill */
+  .status-pill { display:none; }
+  header { padding:0 14px; height:52px; }
+  .logo-mark { width:28px; height:28px; border-radius:7px; }
+  .logo-mark svg { width:15px; height:15px; }
+  .logo-text { font-size:.95rem; }
+
+  /* Intro */
+  #view-intro { padding-top:24px; }
+  .intro-title { line-height:1.08; margin-bottom:.5rem; }
+  .intro-sub   { font-size:.85rem; margin-bottom:28px; }
+  .intro-footer{ font-size:.58rem; }
+
+  /* Mode cards */
+  .mode-grid { gap:12px; }
+  .mode-card { padding:20px 16px; }
+  .mode-title { font-size:1rem; }
+  .mode-desc  { font-size:.8rem; }
+
+  /* Briefing */
+  .briefing-card { padding:14px 14px; }
+  .briefing-val  { font-size:.88rem; }
+
+  /* Monitor */
+  .monitor-brand { display:none; }
+  .monitor-header { padding:6px 12px; }
+  .monitor-body { padding:6px 10px 8px; }
+
+  .vital-row   { grid-template-columns:56px 1fr 72px; min-height:46px; }
+  .vital-value { font-size:1.25rem; }
+  .vital-label { font-size:.42rem; letter-spacing:.14em; }
+  .vital-unit  { font-size:.4rem; }
+  .vital-badge { font-size:.52rem; padding:2px 5px; }
+  .vital-canvas-wrap { height:38px; }
+
+  /* Briefing et mode grid → 1 colonne */
+  .briefing-grid { grid-template-columns:1fr; }
+  .mode-grid { grid-template-columns:1fr; }
+  .monitor-actions { flex-direction:column; gap:8px; }
+  .btn-monitor { min-width:100%; font-size:.84rem; padding:12px 14px; }
+  .btn-monitor-secondary {
+    flex:1; min-width:100%; padding:11px 14px;
+    order:-1; /* toggle en premier sur mobile */
+  }
+
+  /* Patient tag */
+  .patient-tag { font-size:.57rem; }
+
+  /* Quiz topbar */
+  .quiz-topbar { gap:6px; margin-bottom:14px; }
+  .phase-badge { font-size:.55rem; padding:4px 10px; }
+  .progress-group { min-width:0; }
+  .progress-meta  { font-size:.54rem; }
+
+  /* Question */
+  .question-card { padding:13px 14px; margin-bottom:12px; border-radius:10px; }
+  .question-meta { font-size:.52rem; }
+  .question-text { font-size:.88rem; line-height:1.65; }
+
+  /* Choix — grande zone de toucher */
+  .choices { gap:8px; }
+  .choice-btn {
+    padding:13px 13px; font-size:.84rem; line-height:1.5;
+    border-radius:9px; min-height:48px;
+  }
+  .choice-letter { width:20px; height:20px; font-size:.62rem; }
+  .choice-check  { width:16px; height:16px; }
+
+  /* Multi-select info */
+  .multiselect-info { font-size:.55rem; padding:7px 10px; }
+  .btn-validate { padding:12px; font-size:.88rem; }
+
+  /* Feedback */
+  .feedback-wrap { padding:16px 14px 14px; border-radius:10px; }
+  .feedback-verdict { font-size:.95rem; gap:8px; margin-bottom:12px; }
+  .verdict-indicator { width:24px; height:24px; }
+  .feedback-your-answer { padding:9px 11px; }
+  .feedback-answer-label { font-size:.52rem; }
+  .feedback-answer-text  { font-size:.82rem; }
+  .feedback-text { font-size:.85rem; line-height:1.68; }
+  .feedback-naca { font-size:.58rem; }
+
+  /* Résultats */
+  .results-top { flex-direction:column; align-items:center; text-align:center; padding:18px 16px; gap:16px; }
+  .score-ring-wrap { width:110px; height:110px; }
+  .score-ring-svg  { width:110px; height:110px; }
+  .score-number { font-size:1.9rem; }
+  .results-title { font-size:1.15rem; }
+  .results-subtitle { font-size:.82rem; }
+  .stats-row { justify-content:center; gap:10px; }
+  .stat-pill { font-size:.65rem; padding:6px 10px; }
+  .stat-pill-num { font-size:.9rem; }
+
+  .advice-card { padding:13px 12px; gap:10px; }
+  .advice-icon { width:30px; height:30px; }
+  .advice-title { font-size:.88rem; }
+  .advice-text  { font-size:.78rem; }
+  .advice-ref   { font-size:.54rem; }
+
+  .error-q     { font-size:.74rem; }
+  .error-given { font-size:.79rem; }
+  .error-ok    { font-size:.79rem; }
+
+  .btn-restart { padding:14px; font-size:.93rem; }
+
+  /* Section labels */
+  .section-title { font-size:.95rem; }
+  .section-label { font-size:.56rem; }
+
+  /* Loader */
+  .loader-text { font-size:.62rem; }
+
+  /* Situation briefing */
+  .sit-title  { font-size:1.1rem; }
+  .situation-desc { font-size:.85rem; }
+  .briefing-label { font-size:.52rem; }
+}
+
 .mode-card {
   background: var(--bg2);
   border: 2px solid var(--border);
@@ -295,7 +510,7 @@ header {
 .briefing-grid {
   display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:20px;
 }
-@media(max-width:580px){ .briefing-grid{ grid-template-columns:1fr; } }
+/* covered by responsive system above */
 .briefing-card {
   background:var(--bg2); border:1px solid var(--border);
   border-radius:var(--radius-sm); padding:14px 16px;
@@ -591,7 +806,7 @@ header {
   border-radius:var(--radius); padding:28px;
   margin-bottom:20px; box-shadow:var(--shadow);
 }
-@media(max-width:500px){ .results-top{ flex-direction:column; text-align:center; } }
+/* covered by responsive system above */
 .score-ring-wrap {
   position:relative; width:120px; height:120px; flex-shrink:0;
 }
@@ -3198,13 +3413,23 @@ function restart(){
 /* ─────────────────────────────────────────────────────────────────
    RESIZE
 ───────────────────────────────────────────────────────────────── */
+/* ── Resize : redimensionne les canvas et relance les animations ── */
+let _resizeTimer = null;
 window.addEventListener('resize', ()=>{
-  if(!document.getElementById('view-quiz').classList.contains('hidden')){
-    const q = state.questions[state.questionIndex];
-    if(q && q.patient && state.monitorDone && state.monitorVisible){
-      startCanvasAnimations(q.patient);
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(()=>{
+    // Reset canvas dimensions so they pick up new container width
+    ['canvas-ecg','canvas-pleth'].forEach(id => {
+      const c = document.getElementById(id);
+      if(c){ c.width = 0; c.height = 0; }
+    });
+    if(!document.getElementById('view-quiz').classList.contains('hidden')){
+      const q = state.questions[state.questionIndex];
+      if(q && q.patient && state.monitorDone && state.monitorVisible){
+        startCanvasAnimations(q.patient);
+      }
     }
-  }
+  }, 150);
 });
 </script>
 
