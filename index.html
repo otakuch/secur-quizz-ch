@@ -447,8 +447,8 @@ header {
 .vital-badge { font-family:var(--font-mono); font-size:.54rem; padding:2px 7px; border-radius:3px; }
 
 /* Canvas */
-.vital-canvas-wrap { position:relative; height:52px; overflow:hidden; display:block; }
-canvas.vital-canvas { position:absolute; top:0; left:0; width:100%; height:100%; display:block; }
+.vital-canvas-wrap { height:60px; display:block; overflow:hidden; }
+canvas.vital-canvas { display:block; width:100%; height:60px; }
 
 /* ECG row */
 .row-ecg .vital-label { color:#00E676; }
@@ -821,7 +821,7 @@ canvas.vital-canvas { position:absolute; top:0; left:0; width:100%; height:100%;
   /* Monitor */
   .vital-row { grid-template-columns:58px 1fr 72px; min-height:48px; }
   .vital-value { font-size:1.35rem; }
-  .vital-canvas-wrap { height:44px; }
+  .vital-canvas-wrap { height:56px; } canvas.vital-canvas { height:56px; }
   .monitor-brand { display:none; }
   
   /* Feedback */
@@ -844,7 +844,7 @@ canvas.vital-canvas { position:absolute; top:0; left:0; width:100%; height:100%;
   .score-number { font-size:1.9rem; }
   .vital-value { font-size:1.2rem; }
   .vital-row { min-height:44px; }
-  .vital-canvas-wrap { height:38px; }
+  .vital-canvas-wrap { height:50px; } canvas.vital-canvas { height:50px; }
 }
 </style>
 </head>
@@ -3022,366 +3022,366 @@ function startCanvasAnimations(p){
   state.animFrames = [];
   if(!state.monitorVisible) return;
 
-  function measureCanvas(canvas){
-    // getBoundingClientRect is most reliable after layout
-    const rect  = canvas.parentElement ? canvas.parentElement.getBoundingClientRect() : null;
-    const w = rect && rect.width  > 10 ? Math.round(rect.width)  :
-              (canvas.parentElement ? (canvas.parentElement.offsetWidth  || canvas.parentElement.clientWidth  || 280) : 280);
-    const h = rect && rect.height > 4  ? Math.round(rect.height) :
-              (canvas.parentElement ? (canvas.parentElement.offsetHeight || canvas.parentElement.clientHeight || 52 ) : 52 );
-    return { w: Math.max(w, 80), h: Math.max(h, 30) };
-  }
+  /* Wait for layout — two rAF guarantees post-paint dimensions */
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    const ecgEl   = document.getElementById('canvas-ecg');
+    const plthEl  = document.getElementById('canvas-pleth');
+    if(!ecgEl || !plthEl) return;
 
-  function tryStart(attempt){
-    const ecgCanvas   = document.getElementById('canvas-ecg');
-    const plethCanvas = document.getElementById('canvas-pleth');
-    if(!ecgCanvas || !plethCanvas) return;
+    function setDims(c){
+      /* offsetWidth / offsetHeight are reliable after two rAFs */
+      const w = c.offsetWidth  || c.parentElement && c.parentElement.offsetWidth  || 300;
+      const h = c.offsetHeight || c.parentElement && c.parentElement.offsetHeight || 60;
+      c.width  = Math.max(Math.round(w), 80);
+      c.height = Math.max(Math.round(h), 30);
+    }
 
-    const esz = measureCanvas(ecgCanvas);
-    const psz = measureCanvas(plethCanvas);
+    setDims(ecgEl);
+    setDims(plthEl);
 
-    // Retry up to 12 times at 60 ms each if dimensions are still 0
-    if(esz.w < 20 && attempt < 12){
-      setTimeout(()=> tryStart(attempt + 1), 60);
+    /* Retry once if still zero (display:none ancestor) */
+    if(ecgEl.width < 20){
+      setTimeout(()=>{
+        setDims(ecgEl); setDims(plthEl);
+        startECG(p, ecgEl);
+        startPleth(p, plthEl);
+      }, 120);
       return;
     }
 
-    // Set pixel buffer to match CSS layout pixels
-    ecgCanvas.width    = esz.w;  ecgCanvas.height   = esz.h;
-    plethCanvas.width  = psz.w;  plethCanvas.height = psz.h;
-
-    startECG(p, ecgCanvas);
-    startPleth(p, plethCanvas);
-  }
-
-  // First attempt after one rAF (guarantees layout is complete)
-  requestAnimationFrame(()=> setTimeout(()=> tryStart(0), 30));
+    startECG(p, ecgEl);
+    startPleth(p, plthEl);
+  }));
 }
 
-/* ─────────────────────────────────────────────────────────────────
-   CANVAS ECG — SWEEP OSCILLOSCOPE (cursor gauche→droite)
-   Standard médical : 25 mm/s ≈ 120 px/s
-───────────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   ECG SCOPE — sweep left→right like a real patient monitor
+   Standard speed : 25 mm/s ≈ 120 px/s
+   PQRST morphology per ECG type
+═══════════════════════════════════════════════════════════════ */
 function startECG(p, canvas){
+  if(!canvas || !canvas.width || !canvas.height) return;
   const ctx = canvas.getContext('2d');
   if(!ctx) return;
 
   const W = canvas.width, H = canvas.height;
-  if(!W || !H) return;
 
-  const BG   = '#030912';
-  const GRID = 'rgba(0,90,55,.42)';
+  /* ── Colours ── */
+  const BG   = '#030C14';
+  const GRID = 'rgba(0,100,60,.5)';
+  const isCrit = p.ecg==='fv'||p.ecg==='asystolie'||p.hr>130||p.hr<45||p.ecg==='bav3'||p.ecg==='supra_st';
+  const CLR  = isCrit ? '#FF4040' : '#00FF6E';
 
-  // Pathological condition
-  const isCrit = p.ecg === 'fv' || p.ecg === 'asystolie' ||
-                 p.hr > 130 || p.hr < 45 || p.ecg === 'bav3' || p.ecg === 'supra_st';
-  const COLOR = isCrit ? '#FF3B3B' : '#00FF7F';
+  /* ── Timing ── */
+  const PPS     = 120;                           // pixels per second (25 mm/s equiv)
+  const HR      = Math.max(p.hr || 75, 15);
+  const CYCLE_S = 60 / HR;                       // seconds per beat
+  const CYCLE_P = CYCLE_S * PPS;                 // pixels per beat
+  const AMP     = H * 0.42;
+  const MID     = H * 0.50;
 
-  // Sweep at 120 px/s → at HR 75, cycle = 0.8 s → 96 px/cycle → ~3 cycles in 300 px
-  const PPS    = 120;
-  const hr     = Math.max(p.hr || 75, 10);
-  const cycleT = 60 / hr;       // seconds per cycle
-  const cyclePx= cycleT * PPS;  // pixels per cycle
+  /* ── Pre-compute LUT: 4000 samples per cycle ── */
+  const LUT_N = 4000;
+  const lut   = new Float32Array(LUT_N);
 
-  const midY = H * 0.50;
-  const amp  = H * 0.44;
+  for(let i = 0; i < LUT_N; i++){
+    const t = i / LUT_N;  // phase [0,1]
+    let y = 0;
 
-  /* ECG waveform — PQRST phases [0,1] */
-  function ecgY(ph){
-    if(p.ecg === 'asystolie') return 0;
-    if(p.ecg === 'fv') return (
-      Math.sin(ph*62.83)*0.48 + Math.sin(ph*97.39)*0.34 +
-      Math.sin(ph*40.84)*0.18) * amp * 0.60;
-
-    // P  wave : 0.08–0.18
-    if(ph >= 0.08 && ph < 0.18) return -amp * 0.22 * Math.sin((ph-0.08)/0.10 * Math.PI);
-    // PR isoelectric
-    if(ph >= 0.18 && ph < 0.28) return 0;
-    // Q deflection : 0.28–0.30
-    if(ph >= 0.28 && ph < 0.30) return  amp * 0.13 * Math.sin((ph-0.28)/0.02 * Math.PI);
-    // R spike : 0.30–0.37  (sharp, dominant)
-    if(ph >= 0.30 && ph < 0.37) return -amp * 1.00 * Math.sin((ph-0.30)/0.07 * Math.PI);
-    // S deflection : 0.37–0.41
-    if(ph >= 0.37 && ph < 0.41) return  amp * 0.24 * Math.sin((ph-0.37)/0.04 * Math.PI);
-    // ST segment : 0.41–0.53
-    if(ph >= 0.41 && ph < 0.53){
-      const off = p.ecg==='supra_st' ? -amp*0.26 : p.ecg==='infra_st' ? amp*0.18 : 0;
-      return off * (1 - (ph-0.41)/0.12 * 0.22);
-    }
-    // T wave : 0.53–0.71
-    if(ph >= 0.53 && ph < 0.71){
-      const base = p.ecg==='supra_st' ? -amp*0.08 : 0;
-      return base - amp * 0.37 * Math.sin((ph-0.53)/0.18 * Math.PI);
-    }
-    return 0;
-  }
-
-  /* BAV3: extra dissociated P waves at 1.4× rate */
-  function bav3Y(ph){
-    if(p.ecg !== 'bav3') return 0;
-    const p2 = (ph * 1.4) % 1;
-    if(p2 >= 0.08 && p2 < 0.18) return -amp * 0.14 * Math.sin((p2-0.08)/0.10 * Math.PI);
-    return 0;
-  }
-
-  /* Draw faint grid on ctx */
-  function drawGrid(c, w, h){
-    c.save();
-    c.strokeStyle = GRID;
-    c.lineWidth   = 0.5;
-    const mx = cyclePx / 5;  // major grid: 5 boxes per cycle
-    for(let x = 0; x < w; x += mx){
-      c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke();
-    }
-    for(const y of [h*0.25, h*0.5, h*0.75]){
-      c.beginPath(); c.moveTo(0, y); c.lineTo(w, y); c.stroke();
-    }
-    c.restore();
-  }
-
-  /* Full background + grid */
-  ctx.fillStyle = BG;
-  ctx.fillRect(0, 0, W, H);
-  drawGrid(ctx, W, H);
-
-  const SWEEP_W = 10;  // erased band ahead of cursor (px)
-
-  let tStart = null;
-  let lastX  = 0;
-  let lastY  = midY;
-
-  function frame(ts){
-    if(!canvas.isConnected) return;
-    if(tStart === null) tStart = ts;
-
-    const elapsed = (ts - tStart) * 0.001; // seconds
-    const curX    = (elapsed * PPS) % W;
-    const wrapped = curX < lastX;
-
-    if(wrapped){
-      /* When cursor wraps: complete segment to right edge, then clear left */
-      drawSegment(lastX, lastY, W, elapsed + (W - curX) / PPS);
-      ctx.fillStyle = BG;
-      ctx.fillRect(0, 0, W, H);
-      drawGrid(ctx, W, H);
-      lastX = 0;
-      lastY = midY + ecgY(((elapsed * PPS / cyclePx) % 1 + 1) % 1) + bav3Y(((elapsed * PPS / cyclePx) % 1 + 1) % 1);
-    }
-
-    /* Erase band ahead of cursor + redraw grid in that band */
-    ctx.fillStyle = BG;
-    ctx.fillRect(curX, 0, SWEEP_W, H);
-    /* Grid in swept area */
-    ctx.save();
-    ctx.strokeStyle = GRID;
-    ctx.lineWidth   = 0.5;
-    const mx = cyclePx / 5;
-    const gStart = Math.floor(curX / mx) * mx;
-    for(let gx = gStart - mx; gx <= curX + SWEEP_W + mx; gx += mx){
-      if(gx >= curX && gx < curX + SWEEP_W){
-        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
+    if(p.ecg === 'asystolie'){
+      /* flat line + tiny artifact */
+      y = (Math.random() < 0.002) ? AMP * 0.05 * (Math.random()-0.5) : 0;
+    } else if(p.ecg === 'fv'){
+      /* Ventricular fibrillation: chaotic multi-freq */
+      y = (Math.sin(t*62.83)*0.55 + Math.sin(t*97.4)*0.30 + Math.sin(t*143)*0.15) * AMP * 0.65;
+    } else {
+      /* Normal PQRST — phases tuned for realism */
+      if(t >= 0.06 && t < 0.17){          // P wave
+        const x = (t-0.06)/0.11;
+        y = -AMP * 0.22 * Math.sin(x * Math.PI);
+      } else if(t >= 0.17 && t < 0.27){   // PR isoelectric
+        y = 0;
+      } else if(t >= 0.27 && t < 0.295){  // Q dip
+        const x = (t-0.27)/0.025;
+        y = AMP * 0.15 * Math.sin(x * Math.PI);
+      } else if(t >= 0.295 && t < 0.38){  // R spike (narrow dominant)
+        const x = (t-0.295)/0.085;
+        y = -AMP * 1.00 * Math.sin(x * Math.PI);
+      } else if(t >= 0.38 && t < 0.42){   // S dip
+        const x = (t-0.38)/0.04;
+        y = AMP * 0.22 * Math.sin(x * Math.PI);
+      } else if(t >= 0.42 && t < 0.56){   // ST segment
+        const stOff = (p.ecg==='supra_st') ? -AMP*0.28 : (p.ecg==='infra_st') ? AMP*0.20 : 0;
+        const x = (t-0.42)/0.14;
+        y = stOff * (1 - x*0.3);
+      } else if(t >= 0.56 && t < 0.74){   // T wave
+        const x = (t-0.56)/0.18;
+        const base = (p.ecg==='supra_st') ? -AMP*0.08 : 0;
+        y = base - AMP * 0.38 * Math.sin(x * Math.PI);
+      }
+      /* BAV3: extra P at 1.5× rate */
+      if(p.ecg === 'bav3'){
+        const t2 = (t * 1.5) % 1;
+        if(t2 >= 0.06 && t2 < 0.17){
+          const x = (t2-0.06)/0.11;
+          y += -AMP * 0.13 * Math.sin(x * Math.PI);
+        }
       }
     }
-    for(const gy of [H*0.25, H*0.5, H*0.75]){
-      ctx.beginPath(); ctx.moveTo(curX, gy); ctx.lineTo(curX + SWEEP_W, gy); ctx.stroke();
-    }
-    ctx.restore();
-
-    /* Draw new trace segment */
-    if(curX >= lastX){
-      drawSegment(lastX, lastY, curX, elapsed);
-    }
-
-    /* Update state */
-    const ph  = ((elapsed * PPS / cyclePx) % 1 + 1) % 1;
-    lastY = midY + ecgY(ph) + bav3Y(ph);
-    lastX = curX;
-
-    const id = requestAnimationFrame(frame);
-    state.animFrames.push(id);
+    lut[i] = y;
   }
 
-  /* Draw the ECG segment from x1 to x2, knowing elapsed time at x2 */
-  function drawSegment(x1, y1, x2, t2){
-    const dx = x2 - x1;
-    if(dx <= 0) return;
-
-    /* Sub-pixel steps: 3 per pixel for smooth R-spike */
-    const STEPS = Math.max(Math.ceil(dx * 3), 1);
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-
-    for(let i = 1; i <= STEPS; i++){
-      const frac = i / STEPS;
-      const x  = x1 + frac * dx;
-      const t  = t2 - (x2 - x) / PPS;   // time at this x
-      const ph = ((t * PPS / cyclePx) % 1 + 1) % 1;
-      const y  = midY + ecgY(ph) + bav3Y(ph);
-      ctx.lineTo(x, y);
+  /* ── Initial background + grid ── */
+  function fillBG(){
+    ctx.fillStyle = BG;
+    ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = GRID;
+    ctx.lineWidth = 0.5;
+    const gx = CYCLE_P / 5;    // 5 columns per cycle (200 ms)
+    for(let x = 0; x < W + gx; x += gx){
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
     }
-
-    ctx.strokeStyle = COLOR;
-    ctx.lineWidth   = 1.8;
-    ctx.lineJoin    = 'round';
-    ctx.shadowColor = COLOR;
-    ctx.shadowBlur  = 7;
-    ctx.stroke();
-    ctx.restore();
+    for(const fy of [0.25, 0.5, 0.75]){
+      ctx.beginPath(); ctx.moveTo(0, H*fy); ctx.lineTo(W, H*fy); ctx.stroke();
+    }
   }
+  fillBG();
 
-  requestAnimationFrame(frame);
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   CANVAS PLETH — SpO₂ (sweep identique à l'ECG)
-   Forme: montée systolique rapide, encoche dicrote, descente lente
-   Couleur: jaune-cyan selon SpO2
-───────────────────────────────────────────────────────────────── */
-function startPleth(p, canvas){
-  const ctx = canvas.getContext('2d');
-  if(!ctx) return;
-
-  const W = canvas.width, H = canvas.height;
-  if(!W || !H) return;
-
-  const BG   = '#030912';
-  const GRID = 'rgba(0,90,55,.42)';
-
-  const spo2  = parseInt(p.spo2) || 98;
-  /* Color: cyan if normal, amber if borderline, red if critical */
-  const COLOR = spo2 < 88 ? '#FF4040' : spo2 < 94 ? '#FFB020' : '#00E5FF';
-
-  const PPS    = 120;
-  const hr     = Math.max(p.hr || 75, 10);
-  const cycleT = 60 / hr;
-  const cyclePx= cycleT * PPS;
-
-  /* Pleth: baseline at 78% height, peak goes to ~25% */
-  const baseline = H * 0.78;
-  const amp = spo2 < 80 ? H * 0.14 : H * 0.50;
-
-  /* Realistic photoplethysmogram shape */
-  function plethY(ph){
-    // Systolic upstroke : 0.00–0.15 (fast)
-    if(ph < 0.15){
-      const x = ph / 0.15;
-      return -amp * Math.pow(x, 0.6);   // fast steep rise
-    }
-    // Peak plateau : 0.15–0.25
-    if(ph < 0.25){
-      const x = (ph - 0.15) / 0.10;
-      return -amp * (1 - x * 0.08);
-    }
-    // Early systolic descent : 0.25–0.33
-    if(ph < 0.33){
-      const x = (ph - 0.25) / 0.08;
-      return -amp * (0.92 - x * 0.18);
-    }
-    // Dicrotic notch dip : 0.33–0.40
-    if(ph < 0.40){
-      const x = (ph - 0.33) / 0.07;
-      return -amp * (0.74 + Math.sin(x * Math.PI) * 0.07 - x * 0.04);
-    }
-    // Dicrotic secondary peak : 0.40–0.52
-    if(ph < 0.52){
-      const x = (ph - 0.40) / 0.12;
-      return -amp * (0.70 - Math.sin(x * Math.PI) * 0.09 + x * 0.08);
-    }
-    // Diastolic exponential decay : 0.52–1.00
-    const x = (ph - 0.52) / 0.48;
-    return -amp * 0.79 * Math.exp(-x * 2.5);
-  }
-
-  function drawGrid(c, w, h){
-    c.save();
-    c.strokeStyle = GRID;
-    c.lineWidth   = 0.5;
-    const mx = cyclePx / 5;
-    for(let x = 0; x < w; x += mx){ c.beginPath(); c.moveTo(x,0); c.lineTo(x,h); c.stroke(); }
-    for(const y of [h*0.25, h*0.5, h*0.75]){ c.beginPath(); c.moveTo(0,y); c.lineTo(w,y); c.stroke(); }
-    c.restore();
-  }
-
-  ctx.fillStyle = BG;
-  ctx.fillRect(0, 0, W, H);
-  drawGrid(ctx, W, H);
-
-  const SWEEP_W = 10;
-  let tStart = null;
-  let lastX  = 0;
-  let lastY  = baseline;
+  /* ── Sweep state ── */
+  const ERASE_W = 12;          // px ahead of cursor erased
+  let t0 = null;               // start timestamp (ms)
+  let lastCurX = 0;
+  let lastCurY = MID;
 
   function frame(ts){
     if(!canvas.isConnected) return;
-    if(tStart === null) tStart = ts;
+    if(t0 === null) t0 = ts;
 
-    const elapsed = (ts - tStart) * 0.001;
-    const curX    = (elapsed * PPS) % W;
-    const wrapped = curX < lastX;
+    const sec  = (ts - t0) * 0.001;
+    const curX = (sec * PPS) % W;
 
-    if(wrapped){
-      drawSeg(lastX, lastY, W, elapsed + (W - curX) / PPS);
-      ctx.fillStyle = BG;
-      ctx.fillRect(0, 0, W, H);
-      drawGrid(ctx, W, H);
-      lastX = 0;
-      lastY = baseline + plethY(((elapsed * PPS / cyclePx) % 1 + 1) % 1);
+    /* Wrapped? Clear and restart */
+    if(curX < lastCurX - 1){
+      /* Draw segment to right edge first */
+      drawLine(lastCurX, lastCurY, W, sec + (W - curX) / PPS);
+      fillBG();
+      lastCurX = 0;
+      lastCurY = MID + lut[Math.round(((sec * PPS / CYCLE_P) % 1) * (LUT_N-1))];
     }
 
-    /* Sweep erase + grid */
+    /* Erase ahead band */
     ctx.fillStyle = BG;
-    ctx.fillRect(curX, 0, SWEEP_W, H);
+    ctx.fillRect(curX + 1, 0, ERASE_W, H);
+    /* Redraw grid in erased band */
     ctx.save();
-    ctx.strokeStyle = GRID;
-    ctx.lineWidth = 0.5;
-    const mx = cyclePx / 5;
-    const gStart = Math.floor(curX / mx) * mx;
-    for(let gx = gStart - mx; gx <= curX + SWEEP_W + mx; gx += mx){
-      if(gx >= curX && gx < curX + SWEEP_W){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke(); }
+    ctx.strokeStyle = GRID; ctx.lineWidth = 0.5;
+    const gx = CYCLE_P / 5;
+    const gStart = (Math.floor((curX + 1) / gx) - 1) * gx;
+    for(let gxp = gStart; gxp < curX + ERASE_W + gx; gxp += gx){
+      if(gxp > curX && gxp < curX + ERASE_W){
+        ctx.beginPath(); ctx.moveTo(gxp, 0); ctx.lineTo(gxp, H); ctx.stroke();
+      }
     }
-    for(const gy of [H*0.25, H*0.5, H*0.75]){
-      ctx.beginPath(); ctx.moveTo(curX,gy); ctx.lineTo(curX+SWEEP_W,gy); ctx.stroke();
+    for(const fy of [0.25, 0.5, 0.75]){
+      ctx.beginPath(); ctx.moveTo(curX+1, H*fy); ctx.lineTo(curX+ERASE_W, H*fy); ctx.stroke();
     }
     ctx.restore();
 
-    if(curX >= lastX) drawSeg(lastX, lastY, curX, elapsed);
+    /* Draw new segment */
+    if(curX > lastCurX) drawLine(lastCurX, lastCurY, curX, sec);
 
-    const ph = ((elapsed * PPS / cyclePx) % 1 + 1) % 1;
-    lastY = baseline + plethY(ph);
-    lastX = curX;
+    /* Update cursor */
+    const ph  = ((sec * PPS / CYCLE_P) % 1 + 1) % 1;
+    lastCurY  = MID + lut[Math.min(Math.round(ph * (LUT_N-1)), LUT_N-1)];
+    lastCurX  = curX;
 
-    const id = requestAnimationFrame(frame);
-    state.animFrames.push(id);
+    state.animFrames.push(requestAnimationFrame(frame));
   }
 
-  function drawSeg(x1, y1, x2, t2){
+  function drawLine(x1, y1, x2, tAtX2){
     const dx = x2 - x1;
-    if(dx <= 0) return;
-    const STEPS = Math.max(Math.ceil(dx * 2), 1);
+    if(dx < 0.5) return;
+
+    /* Sample at 4px intervals min, or match dx */
+    const STEPS = Math.max(Math.ceil(dx / 1.5), 1);
 
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(x1, y1);
+
     for(let i = 1; i <= STEPS; i++){
       const frac = i / STEPS;
-      const x  = x1 + frac * dx;
-      const t  = t2 - (x2 - x) / PPS;
-      const ph = ((t * PPS / cyclePx) % 1 + 1) % 1;
-      const y  = baseline + plethY(ph);
+      const x   = x1 + frac * dx;
+      const t   = tAtX2 - (dx - frac * dx) / PPS;   // time at this x
+      const ph  = ((t * PPS / CYCLE_P) % 1 + 1) % 1;
+      const li  = Math.min(Math.round(ph * (LUT_N-1)), LUT_N-1);
+      const y   = MID + lut[li];
       ctx.lineTo(x, y);
     }
-    ctx.strokeStyle = COLOR;
+
+    ctx.strokeStyle = CLR;
     ctx.lineWidth   = 1.8;
     ctx.lineJoin    = 'round';
-    ctx.shadowColor = COLOR;
+    ctx.shadowColor = CLR;
     ctx.shadowBlur  = 6;
     ctx.stroke();
     ctx.restore();
   }
 
-  requestAnimationFrame(frame);
+  state.animFrames.push(requestAnimationFrame(frame));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SpO₂ PLETH — Photoplethysmogram
+   Same sweep speed as ECG.  Yellow-cyan like reference image.
+═══════════════════════════════════════════════════════════════ */
+function startPleth(p, canvas){
+  if(!canvas || !canvas.width || !canvas.height) return;
+  const ctx = canvas.getContext('2d');
+  if(!ctx) return;
+
+  const W = canvas.width, H = canvas.height;
+
+  const BG   = '#030C14';
+  const GRID = 'rgba(0,100,60,.5)';
+
+  const spo2 = parseInt(p.spo2) || 98;
+  const CLR  = spo2 < 88 ? '#FF4040' : spo2 < 94 ? '#FFB830' : '#FFE000';  // yellow like ref
+
+  const PPS     = 120;
+  const HR      = Math.max(p.hr || 75, 15);
+  const CYCLE_S = 60 / HR;
+  const CYCLE_P = CYCLE_S * PPS;
+
+  /* Amplitude: reduced if poor perfusion */
+  const AMP  = spo2 < 80 ? H * 0.15 : H * 0.48;
+  const BASE = H * 0.76;   // waveform baseline (diastole rests here)
+
+  /* ── LUT: realistic PPG shape ── */
+  const LUT_N = 4000;
+  const lut   = new Float32Array(LUT_N);
+  for(let i = 0; i < LUT_N; i++){
+    const t = i / LUT_N;
+    let y = 0;
+
+    /* Systolic upstroke: very fast 0–14% */
+    if(t < 0.14){
+      const x = t / 0.14;
+      y = -AMP * (1 - Math.pow(1 - x, 2.5));   // concave up → steep rise
+
+    /* Systolic peak: 14–22% */
+    } else if(t < 0.22){
+      const x = (t - 0.14) / 0.08;
+      y = -AMP * (1 - x * 0.10);
+
+    /* Early systolic descent: 22–32% */
+    } else if(t < 0.32){
+      const x = (t - 0.22) / 0.10;
+      y = -AMP * (0.90 - x * 0.22);
+
+    /* Dicrotic notch dip: 32–40% */
+    } else if(t < 0.40){
+      const x = (t - 0.32) / 0.08;
+      y = -AMP * (0.68 + Math.sin(x * Math.PI) * 0.08 - x * 0.04);
+
+    /* Dicrotic secondary peak: 40–52% */
+    } else if(t < 0.52){
+      const x = (t - 0.40) / 0.12;
+      y = -AMP * (0.64 - Math.sin(x * Math.PI) * 0.10 + x * 0.09);
+
+    /* Diastolic decay: 52–100% */
+    } else {
+      const x = (t - 0.52) / 0.48;
+      y = -AMP * 0.73 * Math.exp(-x * 2.8);
+    }
+    lut[i] = y;
+  }
+
+  function fillBG(){
+    ctx.fillStyle = BG;
+    ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = GRID;
+    ctx.lineWidth = 0.5;
+    const gx = CYCLE_P / 5;
+    for(let x = 0; x < W + gx; x += gx){
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for(const fy of [0.25, 0.5, 0.75]){
+      ctx.beginPath(); ctx.moveTo(0, H*fy); ctx.lineTo(W, H*fy); ctx.stroke();
+    }
+  }
+  fillBG();
+
+  const ERASE_W = 12;
+  let t0 = null;
+  let lastCurX = 0;
+  let lastCurY = BASE;
+
+  function frame(ts){
+    if(!canvas.isConnected) return;
+    if(t0 === null) t0 = ts;
+
+    const sec  = (ts - t0) * 0.001;
+    const curX = (sec * PPS) % W;
+
+    if(curX < lastCurX - 1){
+      drawLine(lastCurX, lastCurY, W, sec + (W - curX) / PPS);
+      fillBG();
+      lastCurX = 0;
+      lastCurY = BASE + lut[Math.min(Math.round(((sec * PPS / CYCLE_P) % 1) * (LUT_N-1)), LUT_N-1)];
+    }
+
+    ctx.fillStyle = BG;
+    ctx.fillRect(curX + 1, 0, ERASE_W, H);
+    ctx.save();
+    ctx.strokeStyle = GRID; ctx.lineWidth = 0.5;
+    const gx = CYCLE_P / 5;
+    const gStart = (Math.floor((curX + 1) / gx) - 1) * gx;
+    for(let gxp = gStart; gxp < curX + ERASE_W + gx; gxp += gx){
+      if(gxp > curX && gxp < curX + ERASE_W){
+        ctx.beginPath(); ctx.moveTo(gxp, 0); ctx.lineTo(gxp, H); ctx.stroke();
+      }
+    }
+    for(const fy of [0.25, 0.5, 0.75]){
+      ctx.beginPath(); ctx.moveTo(curX+1, H*fy); ctx.lineTo(curX+ERASE_W, H*fy); ctx.stroke();
+    }
+    ctx.restore();
+
+    if(curX > lastCurX) drawLine(lastCurX, lastCurY, curX, sec);
+
+    const ph  = ((sec * PPS / CYCLE_P) % 1 + 1) % 1;
+    lastCurY  = BASE + lut[Math.min(Math.round(ph * (LUT_N-1)), LUT_N-1)];
+    lastCurX  = curX;
+
+    state.animFrames.push(requestAnimationFrame(frame));
+  }
+
+  function drawLine(x1, y1, x2, tAtX2){
+    const dx = x2 - x1;
+    if(dx < 0.5) return;
+    const STEPS = Math.max(Math.ceil(dx / 1.5), 1);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    for(let i = 1; i <= STEPS; i++){
+      const frac = i / STEPS;
+      const x   = x1 + frac * dx;
+      const t   = tAtX2 - (dx - frac * dx) / PPS;
+      const ph  = ((t * PPS / CYCLE_P) % 1 + 1) % 1;
+      const li  = Math.min(Math.round(ph * (LUT_N-1)), LUT_N-1);
+      const y   = BASE + lut[li];
+      ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = CLR;
+    ctx.lineWidth   = 1.8;
+    ctx.lineJoin    = 'round';
+    ctx.shadowColor = CLR;
+    ctx.shadowBlur  = 6;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  state.animFrames.push(requestAnimationFrame(frame));
 }
 
 
