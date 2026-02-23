@@ -231,7 +231,8 @@ header {
 
 /* ── PC LARGE ≥1024px : 2 colonnes quiz ─────────────────────── */
 @media(min-width:1024px){
-  .view { max-width:1040px; padding:32px 24px 64px; }
+  html { font-size:17px; }
+  .view { max-width:1120px; padding:36px 28px 72px; }
 
   /* Layout grille 2 colonnes pour le quiz */
   #view-quiz {
@@ -242,28 +243,99 @@ header {
       "pname    pname"
       "monitor  question"
       "actions  choices";
-    column-gap:24px;
+    column-gap:28px;
     align-items:start;
   }
   #view-quiz .quiz-topbar          { grid-area: topbar; }
   #view-quiz #patient-name-display { grid-area: pname; }
   #view-quiz .monitor-shell        { grid-area: monitor; margin-bottom:0; }
   #view-quiz #monitor-actions      { grid-area: actions; margin-bottom:0; }
-  #view-quiz .question-card        { grid-area: question; margin-bottom:14px; }
+  #view-quiz .question-card        { grid-area: question; margin-bottom:16px; }
   #view-quiz #choices-container    { grid-area: choices; }
 
   /* Plus grande valeur vitale sur grand écran */
   .vital-value { font-size:2rem; }
-  .vital-row { grid-template-columns:80px 1fr 96px; }
+  .vital-row { grid-template-columns:82px 1fr 98px; }
+
+  /* Textes agrandis pour la lisibilité */
+  .section-label    { font-size:.7rem; }
+  .section-title    { font-size:1.12rem; }
+  .question-text    { font-size:1.02rem; }
+  .choice-btn       { font-size:.94rem; }
+  .feedback-text    { font-size:.96rem; }
+  .feedback-verdict { font-size:1.22rem; }
+  .phase-badge      { font-size:.66rem; }
+  .progress-meta    { font-size:.64rem; }
+  .score-live       { font-size:.72rem; }
+  .btn-home         { font-size:.66rem; }
+  .status-pill      { font-size:.64rem; }
+  .patient-tag      { font-size:.7rem; }
+  .briefing-val     { font-size:1.08rem; }
+  .briefing-label   { font-size:.65rem; }
+  .situation-desc   { font-size:.96rem; }
+  .advice-title     { font-size:1.02rem; }
+  .advice-text      { font-size:.88rem; }
 
   /* Intro : max-width élargi */
   #view-intro .mode-grid { max-width:720px; }
-  .intro-sub { max-width:600px; }
+  .intro-sub { max-width:620px; font-size:1.05rem; }
 
   /* Résultats en 2 colonnes */
   #view-results .results-top { padding:32px 36px; gap:40px; }
   .score-ring-wrap { width:140px; height:140px; }
   .score-ring-svg  { width:140px; height:140px; }
+  .results-title   { font-size:1.65rem; }
+  .results-subtitle{ font-size:.94rem; }
+  .stat-pill       { font-size:.76rem; }
+  .stat-pill-num   { font-size:1.1rem; }
+}
+
+/* ── PC XL ≥1280px : mise en page encore plus aérée ─────────── */
+@media(min-width:1280px){
+  html { font-size:18px; }
+  .view { max-width:1300px; padding:40px 36px 80px; }
+
+  #view-quiz { column-gap:36px; }
+  .vital-value { font-size:2.2rem; }
+  .vital-row   { grid-template-columns:90px 1fr 108px; }
+
+  header { height:64px; padding:0 32px; }
+  .logo-text { font-size:1.3rem; }
+
+  #view-intro .mode-grid { max-width:840px; }
+  .intro-sub { max-width:700px; }
+  .mode-title { font-size:1.25rem; }
+  .mode-desc  { font-size:.9rem; }
+
+  #view-results .results-top { padding:40px 48px; gap:52px; }
+  .score-ring-wrap { width:160px; height:160px; }
+  .score-ring-svg  { width:160px; height:160px; }
+  .score-number    { font-size:2.5rem; }
+  .results-title   { font-size:1.85rem; }
+
+  .question-card { padding:22px 26px; }
+  .question-text { font-size:1.08rem; }
+  .choice-btn    { font-size:1rem; padding:15px 18px; }
+  .feedback-text { font-size:1rem; }
+  .sit-title     { font-size:2rem; }
+  .advice-card   { padding:20px; }
+  .advice-title  { font-size:1.08rem; }
+  .advice-text   { font-size:.93rem; }
+}
+
+/* ── PC TRÈS LARGE ≥1600px ───────────────────────────────────── */
+@media(min-width:1600px){
+  html { font-size:19px; }
+  .view { max-width:1520px; padding:48px 48px 96px; }
+
+  #view-quiz { column-gap:52px; }
+  .vital-value { font-size:2.5rem; }
+  .vital-row   { grid-template-columns:96px 1fr 116px; }
+
+  header { height:68px; padding:0 40px; }
+  .score-ring-wrap { width:180px; height:180px; }
+  .score-ring-svg  { width:180px; height:180px; }
+  .score-number    { font-size:2.8rem; }
 }
 
 /* ── TABLETTE PAYSAGE 768–1024px ─────────────────────────────── */
