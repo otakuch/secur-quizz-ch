@@ -1279,24 +1279,1219 @@ canvas.vital-canvas { display:block; width:100%; height:60px; }
 
 </div><!-- /view-results -->
 
-
-<!-- ═══ SCRIPT ENGINE (inline) ═══ -->
+<!-- ═══ DATA (IAS3 + CAT) ═══ -->
 <script>
-
+// ═══════════════════════════════════════════════════════════════
+// SECUR-QUIZ | Données IAS 3 — Scénarios cliniques individuels
+// Niveau : Secouriste avancé — sans actes médicaux professionnels
+// Actes médicaux uniquement sur délégation / supervision médicale
+// ─────────────────────────────────────────────────────────────
+// Compétences testées : ABCDE, O2, positionnement, DAE/RCP,
+// garrot, immobilisation, glucogel, surveillance, transmission
+// ═══════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════
 // SECUR-QUIZ | Données IAS 3 — Scénarios cliniques individuels
-// Protocoles : SRC 2021, ABCDE, NACA, BSC Genève
-// Format : chaque cas = { id, title, context, questions[] }
-// ─────────────────────────────────────────────────────────────
-// AJOUT D'UN CAS :
-//   1. Copier un bloc { id, title, context, questions: [...] }
-//   2. Incrémenter l'id : IAS3-09, IAS3-10, etc.
-//   3. Chaque case a 5 questions, chaque question a 3 choix (1 correct)
-//   4. Sauvegarder — le moteur charge tous les cas aléatoirement
+// Niveau : Secouriste de premier secours avancé
+// Compétences : positionnement, O2, RCP/DAE, garrot, glucogel,
+//               immobilisation, transmission 144, surveillance
+// Note : réponses mélangées aléatoirement par le moteur
+// ═══════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+// SECUR-QUIZ | Données IAS 3 — Niveau samaritains / premiers secours
+// Les bonnes réponses sont placées aléatoirement dans les données
+// (position 0, 1 ou 2) + shuffle supplémentaire à l'affichage
 // ═══════════════════════════════════════════════════════════════
 
 const IAS3_CASES = [
+
+  // ────────────────────────────────────────────────────────────────
+  // CAS 01 : Douleur à la poitrine — Homme 58 ans
+  // ────────────────────────────────────────────────────────────────
+  {
+    id: "IAS3-01",
+    title: "Douleur à la poitrine — Homme 58 ans",
+    context: "Genève, rue de Berne. 08h42. Un homme de 58 ans est effondré sur un banc. Il se plaint d'une forte douleur dans la poitrine depuis 20 minutes. Il transpire beaucoup, est pâle et conscient.",
+    questions: [
+      {
+        patient: { hr: 98, spo2: 93, bp: "162/98", rr: 22, gcs: 15, ecg: "sinusal_tachy", state: "conscient" },
+        text: "L'homme est conscient, pâle et transpire. La douleur remonte vers l'épaule gauche. Qu'est-ce que vous faites en premier ?",
+        choices: [
+          { text: "Vous lui donnez de l'eau et desserrez sa ceinture pour l'aider à respirer mieux", correct: false },
+          { text: "Vous l'installez en position demi-assise, vous mettez le masque à oxygène et vous appelez le 144", correct: true },
+          { text: "Vous l'allongez à plat sur le sol pour qu'il soit stable et attendez qu'il récupère", correct: false }
+        ],
+        feedback: {
+          correct: "Position demi-assise pour faciliter la respiration, masque à oxygène dès que la saturation est basse, et appel au 144 immédiatement avec description précise. Ce sont les trois premiers gestes sur une douleur thoracique.",
+          incorrect: "L'allonger à plat aggrave la respiration. L'eau ne sert à rien. Le masque à oxygène et l'appel au 144 ne doivent pas être retardés.",
+          naca: "NACA IV"
+        }
+      },
+      {
+        patient: { hr: 104, spo2: 92, bp: "158/96", rr: 24, gcs: 15, ecg: "supra_st", state: "conscient" },
+        text: "Il vous montre une boîte de Plavix (médicament contre la coagulation du sang). Que faites-vous de cette information ?",
+        choices: [
+          { text: "Vous gardez la boîte et la transmettez aux secours à leur arrivée en précisant qu'il en prend", correct: true },
+          { text: "Ce n'est pas important, vous vous concentrez uniquement sur les mesures des constantes", correct: false },
+          { text: "Vous lui donnez le médicament maintenant car il peut en avoir besoin", correct: false }
+        ],
+        feedback: {
+          correct: "Garder la boîte et la montrer aux secours médicalisés est essentiel. Ce médicament peut changer la façon dont les médecins vont le traiter. Votre rôle est de collecter et transmettre.",
+          incorrect: "Donner un médicament sans ordre d'un médecin est interdit. Ignorer le traitement prive le médecin d'une information qui peut changer toute la prise en charge.",
+          naca: "NACA IV"
+        }
+      },
+      {
+        patient: { hr: 48, spo2: 91, bp: "88/60", rr: 18, gcs: 14, ecg: "bav3", state: "obnubilé" },
+        text: "Il devient soudainement moins réactif, son pouls est très lent et sa tension baisse. Que faites-vous ?",
+        choices: [
+          { text: "Vous le laissez dans la même position et attendez les secours sans bouger à rien", correct: false },
+          { text: "Vous l'allongez avec les jambes légèrement surélevées, maintenez l'oxygène et rappelez le 144 pour signaler l'aggravation", correct: true },
+          { text: "Vous le tapotez sur le visage pour le garder conscient", correct: false }
+        ],
+        feedback: {
+          correct: "Jambes surélevées pour aider la circulation (position de choc), oxygène maintenu, et rappel urgent au 144. Le défibrillateur doit être prêt à portée car le risque d'arrêt cardiaque augmente.",
+          incorrect: "Attendre sans agir laisse l'état se détériorer. Les tapotements ne servent à rien. La position jambes surélevées et le rappel au 144 sont vos priorités.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 0, spo2: 0, bp: "—", rr: 0, gcs: 3, ecg: "fv", state: "arrêt" },
+        text: "Il s'effondre, ne répond plus et ne respire plus normalement. Quelle est la bonne séquence ?",
+        choices: [
+          { text: "Vous vérifiez l'absence de respiration, appelez le 144, commencez les compressions thoraciques 30 compressions + 2 souffles, et allumez le défibrillateur dès qu'il arrive", correct: true },
+          { text: "Vous attendez le défibrillateur avant de commencer pour ne pas le fatiguer inutilement", correct: false },
+          { text: "Vous faites du bouche-à-bouche uniquement pendant 1 minute avant de commencer les compressions", correct: false }
+        ],
+        feedback: {
+          correct: "La bonne séquence : confirmer l'absence de respiration → appel 144 → compressions thoraciques 30:2 immédiatement → défibrillateur dès disponible. Ne pas attendre le défibrillateur pour commencer.",
+          incorrect: "Attendre le défibrillateur sans compressions fait perdre des minutes précieuses. Le bouche-à-bouche seul ne suffit pas. Les compressions commencent immédiatement.",
+          naca: "NACA VII"
+        }
+      },
+      {
+        patient: { hr: 72, spo2: 97, bp: "118/78", rr: 16, gcs: 15, ecg: "sinusal", state: "conscient" },
+        text: "Après 2 chocs du défibrillateur, le patient reprend connaissance. Qu'est-ce que vous faites maintenant ?",
+        choices: [
+          { text: "Vous retirez le masque à oxygène et les électrodes — il n'en a plus besoin puisqu'il est conscient", correct: false },
+          { text: "Vous l'asseyez pour le rassurer — il est conscient donc le plus difficile est passé", correct: false },
+          { text: "Vous le maintenez allongé, gardez l'oxygène, continuez à surveiller et notez l'heure du retour de conscience", correct: true }
+        ],
+        feedback: {
+          correct: "Après un arrêt cardiaque réanimé, le patient peut repartir en arrêt à tout moment. On maintient la position allongée, l'oxygène, la surveillance constante et on note l'heure pour la transmettre.",
+          incorrect: "Retirer l'oxygène et le défibrillateur est dangereux. Le cœur reste instable plusieurs minutes. Asseoir le patient peut aussi être dangereux. Tout reste en place jusqu'aux secours médicaux.",
+          naca: "NACA VI"
+        }
+      }
+    ]
+  },
+
+  // ────────────────────────────────────────────────────────────────
+  // CAS 02 : Choc à la tête — Cycliste 34 ans
+  // ────────────────────────────────────────────────────────────────
+  {
+    id: "IAS3-02",
+    title: "Choc à la tête — Cycliste 34 ans",
+    context: "Lausanne. 15h10. Un cycliste sans casque a percuté un poteau à environ 30 km/h. Il est allongé sur le sol, ne répond pas clairement. Une plaie sur le front saigne. Un passant lui tient la tête.",
+    questions: [
+      {
+        patient: { hr: 58, spo2: 96, bp: "178/102", rr: 12, gcs: 9, ecg: "sinusal_brady", state: "obnubilé" },
+        text: "Vous arrivez. Le cycliste a reçu un choc violent à la tête sans casque. Quel est votre tout premier geste physique ?",
+        choices: [
+          { text: "Vous secouez doucement les épaules pour voir s'il réagit", correct: false },
+          { text: "Vous le retournez sur le côté pour libérer les voies respiratoires au cas où il vomit", correct: false },
+          { text: "Vous placez vos deux mains de chaque côté de sa tête pour la maintenir immobile dans l'axe du corps", correct: true }
+        ],
+        feedback: {
+          correct: "Après un choc violent à la tête, on suspecte une blessure à la nuque. Premier geste : maintenir la tête dans l'axe avec les deux mains, sans bouger le patient. Stabiliser avant d'évaluer.",
+          incorrect: "Le retourner ou le secouer peut aggraver une fracture du cou invisible. Maintenir la tête dans l'axe est toujours le premier geste après un choc violent.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 55, spo2: 94, bp: "185/108", rr: 10, gcs: 8, ecg: "sinusal_brady", state: "semi-comateux" },
+        text: "Sa pupille gauche est beaucoup plus grande que la droite et réagit peu à la lumière. Que faites-vous ?",
+        choices: [
+          { text: "Vous lui faites de la respiration artificielle car ce signe indique qu'il va s'arrêter de respirer", correct: false },
+          { text: "Vous notez ce signe précisément et le signalez immédiatement au 144 — c'est une urgence grave", correct: true },
+          { text: "Vous attendez quelques minutes pour voir si la pupille revient à la normale", correct: false }
+        ],
+        feedback: {
+          correct: "Une pupille qui s'agrandit d'un seul côté après un choc à la tête est un signe d'alarme très grave. Votre rôle : l'observer, le noter et le signaler au 144 immédiatement. Ce signe peut déclencher une intervention chirurgicale d'urgence.",
+          incorrect: "Attendre peut coûter des minutes vitales. La respiration artificielle n'est pas indiquée — il respire encore. Ce signe doit être signalé immédiatement.",
+          naca: "NACA VI"
+        }
+      },
+      {
+        patient: { hr: 60, spo2: 95, bp: "180/104", rr: 14, gcs: 9, ecg: "sinusal_brady", state: "obnubilé" },
+        text: "La plaie sur le front saigne activement. Comment arrêtez-vous ce saignement ?",
+        choices: [
+          { text: "Vous posez un garrot autour de la tête pour bloquer le saignement", correct: false },
+          { text: "Vous laissez saigner pour éviter que le sang n'appuie sur le cerveau", correct: false },
+          { text: "Vous appuyez fermement avec une compresse sur la plaie. Si vous sentez l'os bouger, vous appuyez autour sans appuyer sur le centre", correct: true }
+        ],
+        feedback: {
+          correct: "Compression directe sur la plaie du cuir chevelu. Si vous suspectez un os fracturé (os qui bouge ou crépite), vous comprimez en anneau autour sans appuyer sur le centre. Le cuir chevelu saigne beaucoup — la compression est toujours nécessaire.",
+          incorrect: "Le garrot ne peut pas s'appliquer sur la tête. Laisser saigner est dangereux. La compression directe reste votre seul outil.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 62, spo2: 96, bp: "176/100", rr: 14, gcs: 9, ecg: "sinusal", state: "obnubilé" },
+        text: "Comment évaluez-vous correctement l'état de conscience du cycliste ?",
+        choices: [
+          { text: "Vous évaluez une seule fois à l'arrivée, puis vous vous concentrez sur les autres soins", correct: false },
+          { text: "Vous testez : est-ce qu'il ouvre les yeux ? Est-ce qu'il répond ? Est-ce qu'il bouge sur commande ? Vous notez l'heure de chaque évaluation et répétez toutes les 5 minutes", correct: true },
+          { text: "Vous lui demandez juste son nom et son âge — s'il répond, c'est qu'il va bien", correct: false }
+        ],
+        feedback: {
+          correct: "L'évaluation de la conscience se fait sur trois éléments : yeux, réponse verbale, mouvements. On la répète régulièrement car l'évolution dans le temps est aussi importante que la valeur initiale. On note l'heure à chaque évaluation.",
+          incorrect: "Répondre son nom ne suffit pas — un patient peut parler mais ne plus bouger sur commande. Une seule évaluation ne suffit pas. On surveille l'évolution toutes les 3-5 minutes.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 64, spo2: 97, bp: "172/98", rr: 14, gcs: 10, ecg: "sinusal", state: "obnubilé" },
+        text: "L'équipe médicale arrive. Que transmettez-vous en priorité ?",
+        choices: [
+          { text: "Uniquement les chiffres actuels du pouls et de l'oxymètre — c'est ce que le médecin demande en priorité", correct: false },
+          { text: "Vous laissez le patient parler lui-même — vous n'êtes pas médecin", correct: false },
+          { text: "Comment l'accident s'est passé (vitesse, sans casque), comment il était à votre arrivée et comment il a évolué, ce que vous avez fait, et les signes observés (pupille, saignement)", correct: true }
+        ],
+        feedback: {
+          correct: "La transmission inclut : le mécanisme (comment, vitesse, sans casque), l'état initial vs actuel (évolution), vos gestes, et les signes importants. Le médecin a besoin de tout ça, pas seulement des chiffres actuels.",
+          incorrect: "Les chiffres seuls sans contexte sont insuffisants. Vous êtes le seul à avoir vu l'état initial — votre témoignage est irremplaçable. Une description claire suffit, pas besoin de termes médicaux.",
+          naca: "NACA V"
+        }
+      }
+    ]
+  },
+
+  // ────────────────────────────────────────────────────────────────
+  // CAS 03 : Crise d'asthme grave — Femme 27 ans
+  // ────────────────────────────────────────────────────────────────
+  {
+    id: "IAS3-03",
+    title: "Crise d'asthme grave — Femme 27 ans",
+    context: "Carouge. 23h05. Une femme de 27 ans asthmatique a beaucoup de mal à respirer. Elle ne peut plus parler en phrases entières. Son spray bleu n'a rien changé malgré 8 utilisations. On entend des sifflements quand elle respire.",
+    questions: [
+      {
+        patient: { hr: 128, spo2: 86, bp: "138/88", rr: 34, gcs: 15, ecg: "sinusal_tachy", state: "consciente" },
+        text: "Elle est assise penchée en avant, appuyée sur les bras. Elle respire 34 fois par minute. L'oxymètre indique 86%. Que faites-vous ?",
+        choices: [
+          { text: "Vous lui mettez le masque à oxygène à 15 L/min, vous la laissez dans sa position (c'est la meilleure pour elle) et appelez le 144", correct: true },
+          { text: "Vous lui donnez un deuxième spray bleu — elle n'en a peut-être pas pris assez", correct: false },
+          { text: "Vous l'allongez à plat pour qu'elle soit plus confortable", correct: false }
+        ],
+        feedback: {
+          correct: "La position penchée en avant qu'elle a choisie spontanément est la meilleure — ne pas la changer. L'oxygène à plein débit est urgent avec une saturation à 86%. Appel au 144 immédiat. Le spray est inefficace après 8 utilisations.",
+          incorrect: "L'allonger aggrave la respiration. Un spray supplémentaire sans effet ne changera rien. Sa position spontanée est la meilleure — la respecter.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 132, spo2: 84, bp: "142/90", rr: 36, gcs: 14, ecg: "sinusal_tachy", state: "épuisée" },
+        text: "Soudainement, les sifflements s'arrêtent. Elle semble encore plus mal. Est-ce un bon signe ?",
+        choices: [
+          { text: "Oui — la crise se termine, les bronches s'ouvrent. Vous pouvez souffler un peu.", correct: false },
+          { text: "C'est neutre — les sifflements disparaissent parfois naturellement.", correct: false },
+          { text: "Non — c'est très dangereux. Plus de sifflements veut dire que presque plus d'air passe. Appelez le 144 en urgence absolue et préparez le ballon de ventilation.", correct: true }
+        ],
+        feedback: {
+          correct: "La disparition des sifflements sur une crise d'asthme est un signe de danger extrême — jamais une amélioration. Cela signifie que l'air ne passe presque plus. C'est une alerte maximale. Rappel 144 urgent et ballon de ventilation prêt.",
+          incorrect: "C'est une erreur classique et fatale. Le silence dans la poitrine sur asthme grave = danger immédiat. Toujours interpréter la disparition des sifflements comme une aggravation.",
+          naca: "NACA VI"
+        }
+      },
+      {
+        patient: { hr: 58, spo2: 72, bp: "88/60", rr: 6, gcs: 10, ecg: "sinusal_brady", state: "épuisée" },
+        text: "Elle ne respire plus que 6 fois par minute. Le médecin par téléphone vous demande de commencer à ventiler avec le ballon de ventilation. Comment procédez-vous ?",
+        choices: [
+          { text: "Vous attendez l'arrivée physique du médecin — ventiler sans le médecin présent est trop risqué", correct: false },
+          { text: "Masque bien appliqué sur le visage, une insufflation lente toutes les 5-6 secondes, vous laissez bien le temps à l'air de sortir entre chaque", correct: true },
+          { text: "Vous comprimez le ballon rapidement et fort pour envoyer le maximum d'air le plus vite possible", correct: false }
+        ],
+        feedback: {
+          correct: "Ventilation sur ordre médical : insufflations lentes, pas trop fortes, et on laisse l'air sortir complètement avant la suivante. Sur asthme surtout, ventiler vite peut provoquer une rupture des poumons. Environ 10-12 insufflations par minute.",
+          incorrect: "Ventiler vite et fort sur asthme est dangereux. L'ordre téléphonique du médecin est suffisant pour commencer — c'est une délégation valide.",
+          naca: "NACA VI"
+        }
+      },
+      {
+        patient: { hr: 102, spo2: 91, bp: "118/74", rr: 18, gcs: 15, ecg: "sinusal_tachy", state: "consciente" },
+        text: "Le médecin est là et administre un médicament. Quel est votre rôle pendant ce soin ?",
+        choices: [
+          { text: "Vous prenez le relais du médecin pour qu'il puisse se concentrer sur autre chose", correct: false },
+          { text: "Votre rôle est terminé quand le médecin prend en charge — vous rangez votre matériel", correct: false },
+          { text: "Vous continuez à surveiller la respiration, la saturation et l'état de conscience, et vous signalez tout changement au médecin", correct: true }
+        ],
+        feedback: {
+          correct: "Pendant les soins médicaux, le secouriste continue de surveiller activement. Vous êtes les yeux du médecin quand il est concentré sur un geste. Signaler tout changement est votre rôle.",
+          incorrect: "Ranger le matériel ou s'effacer pendant les soins est une erreur. Votre surveillance reste active jusqu'à ce que la patiente soit stabilisée.",
+          naca: "NACA IV"
+        }
+      },
+      {
+        patient: { hr: 98, spo2: 95, bp: "122/76", rr: 18, gcs: 15, ecg: "sinusal", state: "consciente" },
+        text: "Après traitement elle va mieux et refuse d'aller à l'hôpital. Que faites-vous ?",
+        choices: [
+          { text: "Vous la retenez de force — elle vient de faire une crise grave et n'est pas en état de décider", correct: false },
+          { text: "Vous lui expliquez qu'une crise peut revenir dans les heures suivantes, vous lui faites signer un refus de transport et informez les secours médicaux", correct: true },
+          { text: "Vous partez sans rien noter — c'est sa décision d'adulte, vous n'avez aucune responsabilité", correct: false }
+        ],
+        feedback: {
+          correct: "Une personne consciente et lucide peut refuser. Votre rôle : l'informer du risque de récidive, faire signer le refus de transport, et le signaler. La traçabilité vous protège.",
+          incorrect: "La retenir de force est illégal sauf danger grave immédiat. Partir sans documenter vous expose légalement. L'information et la signature sont obligatoires.",
+          naca: "NACA III"
+        }
+      }
+    ]
+  },
+
+  // ────────────────────────────────────────────────────────────────
+  // CAS 04 : Malaise sucre trop bas — Homme diabétique 44 ans
+  // ────────────────────────────────────────────────────────────────
+  {
+    id: "IAS3-04",
+    title: "Malaise — Homme diabétique 44 ans",
+    context: "Nyon, parking. 12h35. Un homme est retrouvé dans sa voiture, agité et confus. Il a un badge autour du cou indiquant 'diabétique'. Il ne répond pas de façon cohérente.",
+    questions: [
+      {
+        patient: { hr: 112, spo2: 98, bp: "148/86", rr: 18, gcs: 12, ecg: "sinusal_tachy", state: "confus" },
+        text: "L'homme est agité, transpire et est confus. Il porte un badge 'diabétique'. Quelle est votre première action ?",
+        choices: [
+          { text: "Vous attendez qu'il se calme pour pouvoir lui parler correctement", correct: false },
+          { text: "Vous lui donnez du sucre tout de suite — ça ne peut pas faire de mal à un diabétique", correct: false },
+          { text: "Vous mesurez son taux de sucre dans le sang avec le glucomètre — 5 secondes et ça guide toute la suite", correct: true }
+        ],
+        feedback: {
+          correct: "Le glucomètre en 5 secondes confirme si c'est trop peu ou trop de sucre. Donner du sucre sans vérifier peut aggraver certains états. La mesure guide tout le reste.",
+          incorrect: "Un diabétique peut aussi avoir trop de sucre — donner du sucre sans mesurer peut aggraver son état. Attendre laisse progresser un éventuel taux de sucre dangereux.",
+          naca: "NACA IV"
+        }
+      },
+      {
+        patient: { hr: 116, spo2: 97, bp: "144/88", rr: 18, gcs: 10, ecg: "sinusal_tachy", state: "semi-conscient" },
+        text: "Le glucomètre indique 1.8 mmol/L (très bas). L'homme est somnolent. Comment lui donnez-vous du glucose ?",
+        choices: [
+          { text: "Vous frottez du gel de glucose (Glucogel) sur l'intérieur de sa joue ou sous sa langue — il absorbe sans avoir à avaler", correct: true },
+          { text: "Vous attendez les secours sans rien faire — administrer du glucose c'est une décision médicale", correct: false },
+          { text: "Vous lui donnez un verre de jus d'orange à boire", correct: false }
+        ],
+        feedback: {
+          correct: "Le gel de glucose appliqué sur la muqueuse buccale est le bon geste quand le patient est somnolent : il n'a pas besoin d'avaler. C'est dans les compétences du secouriste. Faire boire quelqu'un de somnolent risque l'étouffement.",
+          incorrect: "Faire boire une personne somnolente risque qu'elle avale le liquide dans les poumons. Attendre sans agir laisse progresser les dommages. Le gel de glucose gingival est prévu pour cette situation.",
+          naca: "NACA IV"
+        }
+      },
+      {
+        patient: { hr: 104, spo2: 98, bp: "138/82", rr: 16, gcs: 14, ecg: "sinusal", state: "conscient" },
+        text: "Après le gel, le patient reprend conscience. Son taux de sucre est maintenant à 3.9 mmol/L. Il veut reprendre sa voiture. Que faites-vous ?",
+        choices: [
+          { text: "Vous n'avez pas le droit de l'empêcher de conduire — seule la police peut décider ça", correct: false },
+          { text: "Vous le laissez partir — son taux de sucre est normalisé donc il n'y a plus de risque", correct: false },
+          { text: "Vous l'informez qu'il ne peut pas conduire après un malaise avec trouble de conscience, et que son taux de sucre peut rebaisser dans l'heure", correct: true }
+        ],
+        feedback: {
+          correct: "3.9 mmol/L est encore limite et peut rebaisser rapidement. Conduire après un malaise avec perte partielle de conscience est dangereux pour lui et pour les autres. Vous avez le devoir de l'informer clairement.",
+          incorrect: "Le taux normalisé ne garantit pas la stabilité dans l'heure. Informer le patient du risque fait partie de votre rôle — vous l'informez et vous le notez.",
+          naca: "NACA III"
+        }
+      },
+      {
+        patient: { hr: 100, spo2: 98, bp: "134/80", rr: 16, gcs: 15, ecg: "sinusal", state: "conscient" },
+        text: "Sans appareil de mesure, comment faire la différence entre trop peu de sucre et trop de sucre dans le sang ?",
+        choices: [
+          { text: "Trop peu de sucre = toujours inconscient profond. Trop de sucre = toujours agité. Ce sont des règles absolues.", correct: false },
+          { text: "Trop peu de sucre : ça arrive d'un coup, transpiration, pâleur, agitation, pouls rapide. Trop de sucre : ça s'installe sur des heures, bouche sèche, soif intense, peau sèche", correct: true },
+          { text: "Impossible de différencier sans appareil — les deux se ressemblent parfaitement", correct: false }
+        ],
+        feedback: {
+          correct: "La distinction existe et est utile. Trop peu de sucre : début soudain, transpiration froide, pâleur, agitation, pouls rapide. Trop de sucre : début progressif sur heures, soif intense, bouche sèche, parfois odeur sucrée de l'haleine. L'appareil de mesure confirme toujours.",
+          incorrect: "La différenciation est réelle. Les signes principaux sont suffisamment différents pour orienter. L'appareil de mesure est toujours le meilleur outil de confirmation.",
+          naca: "NACA III"
+        }
+      },
+      {
+        patient: { hr: 96, spo2: 98, bp: "130/78", rr: 14, gcs: 15, ecg: "sinusal", state: "conscient" },
+        text: "Le patient dit avoir modifié seul sa dose d'insuline et ne rien avoir mangé depuis ce matin. Comment réagissez-vous ?",
+        choices: [
+          { text: "Vous le grondez — modifier ses doses seul est très dangereux et il doit le savoir", correct: false },
+          { text: "Vous écoutez sans le juger, posez des questions pour comprendre pourquoi, et transmettez ces informations aux urgences", correct: true },
+          { text: "Ce détail ne concerne pas l'hôpital — ce qui compte c'est seulement le taux de sucre du moment", correct: false }
+        ],
+        feedback: {
+          correct: "L'écoute sans jugement permet au patient de parler librement. Les raisons derrière la modification de traitement sont importantes pour le médecin. Transmettre ce contexte fait partie de votre rôle.",
+          incorrect: "Le réprimander à chaud nuit à la relation. Le contexte du traitement est une information importante pour les médecins aux urgences.",
+          naca: "NACA III"
+        }
+      }
+    ]
+  },
+
+  // ────────────────────────────────────────────────────────────────
+  // CAS 05 : Noyade — Enfant 6 ans
+  // ────────────────────────────────────────────────────────────────
+  {
+    id: "IAS3-05",
+    title: "Noyade — Enfant 6 ans",
+    context: "Morges, piscine privée. 14h22. Un enfant de 6 ans a été sous l'eau environ 2 minutes. Son père vient de le sortir. L'enfant est inconscient, bleu et ne respire pas.",
+    questions: [
+      {
+        patient: { hr: 40, spo2: 72, bp: "70/40", rr: 0, gcs: 3, ecg: "sinusal_brady", state: "inconscient" },
+        text: "L'enfant ne respire pas mais a encore un faible pouls. Quelle différence y a-t-il entre réanimer un noyé et quelqu'un dont le cœur s'arrête d'un coup ?",
+        choices: [
+          { text: "Pour un noyé : on commence par 5 souffles avant les compressions — le problème vient du manque d'air. Pour un arrêt soudain du cœur chez l'adulte : compressions d'abord.", correct: true },
+          { text: "C'est la même chose : 30 compressions + 2 souffles immédiatement dans les deux cas", correct: false },
+          { text: "Pour un noyé : on le retourne pour vider l'eau des poumons avant de commencer", correct: false }
+        ],
+        feedback: {
+          correct: "La noyade prive d'abord d'oxygène. On commence donc par 5 souffles pour redonner de l'air avant les compressions. Sur un enfant : 15 compressions pour 2 souffles. Ne jamais retourner — ça ne vide pas les poumons et fait perdre du temps.",
+          incorrect: "L'ordre diffère selon la cause. Le retournement est une idée reçue dangereuse qui retarde la réanimation.",
+          naca: "NACA VII"
+        }
+      },
+      {
+        patient: { hr: 0, spo2: 0, bp: "—", rr: 0, gcs: 3, ecg: "asystolie", state: "arrêt" },
+        text: "Le défibrillateur indique 'pas de choc nécessaire'. L'enfant noyé dans l'eau froide est en arrêt cardiaque. Est-ce que vous arrêtez la réanimation ?",
+        choices: [
+          { text: "Non — vous continuez les compressions sans arrêt jusqu'à l'arrivée des secours médicaux. Un enfant noyé dans l'eau froide peut survivre même après beaucoup de temps.", correct: true },
+          { text: "Vous attendez l'avis du médecin par téléphone avant de continuer ou d'arrêter", correct: false },
+          { text: "Oui — le défibrillateur dit pas de choc, donc c'est sans espoir", correct: false }
+        ],
+        feedback: {
+          correct: "'Pas mort tant que pas chaud et mort.' L'eau froide ralentit le cerveau et le protège pendant un certain temps. 'Pas de choc' signifie juste que le rythme cardiaque actuel ne répond pas aux chocs — pas que la réanimation est inutile. Continuez jusqu'aux secours.",
+          incorrect: "Le défibrillateur ne dit pas que c'est sans espoir. La décision d'arrêt appartient au médecin. Continuez.",
+          naca: "NACA VII"
+        }
+      },
+      {
+        patient: { hr: 62, spo2: 88, bp: "78/52", rr: 12, gcs: 6, ecg: "sinusal_brady", state: "RACS" },
+        text: "L'enfant reprend un pouls mais est froid (température corporelle 31°C). Comment gérez-vous le froid ?",
+        choices: [
+          { text: "Vous le laissez tel quel — le réchauffement c'est pour l'hôpital, pas votre rôle", correct: false },
+          { text: "Vous enlevez ses vêtements mouillés, l'enveloppez dans une couverture de survie (face dorée vers lui), puis dans une couverture chaude par-dessus", correct: true },
+          { text: "Vous le mettez dans un bain d'eau chaude pour le réchauffer rapidement", correct: false }
+        ],
+        feedback: {
+          correct: "Réchauffement progressif : retirer les vêtements mouillés, couverture de survie (côté doré vers la peau pour refléter la chaleur du corps), couverture chaude par-dessus. Réchauffer trop vite peut provoquer un autre arrêt cardiaque.",
+          incorrect: "Le bain chaud réchauffe trop vite et peut refaire partir le cœur en arrêt. Laisser un enfant dans l'hypothermie sans rien faire alors que vous avez du matériel est une erreur.",
+          naca: "NACA VI"
+        }
+      },
+      {
+        patient: { hr: 70, spo2: 92, bp: "84/56", rr: 14, gcs: 6, ecg: "sinusal", state: "semi-comateux" },
+        text: "Le père en panique veut mettre son fils dans sa voiture pour l'emmener lui-même à l'hôpital. Que faites-vous ?",
+        choices: [
+          { text: "Vous appelez la police immédiatement pour le bloquer", correct: false },
+          { text: "Vous le laissez partir — le père a la responsabilité légale de son enfant", correct: false },
+          { text: "Vous lui expliquez calmement le risque vital et vous lui proposez d'accompagner son fils dans l'ambulance", correct: true }
+        ],
+        feedback: {
+          correct: "Un père paniqué a besoin d'être entendu, pas contredit. Ton calme, brève explication du danger, et offre d'accompagnement dans l'ambulance — dans la grande majorité des cas, ça suffit.",
+          incorrect: "Un enfant après un arrêt cardiaque dans une voiture sans équipement peut mourir en route. La police peut aggraver la tension. L'approche calme est plus efficace.",
+          naca: "NACA VI"
+        }
+      },
+      {
+        patient: { hr: 74, spo2: 94, bp: "88/58", rr: 16, gcs: 7, ecg: "sinusal", state: "semi-comateux" },
+        text: "À la transmission à l'hôpital, qu'est-ce que vous devez absolument dire et que vous seul savez ?",
+        choices: [
+          { text: "Uniquement son âge et son pouls actuel", correct: false },
+          { text: "Combien de temps il a été sous l'eau, si l'eau était froide ou tiède, depuis combien de temps vous avez commencé la réanimation, et sa température corporelle", correct: true },
+          { text: "La transmission noyade est la même que pour tout autre arrêt cardiaque", correct: false }
+        ],
+        feedback: {
+          correct: "Durée sous l'eau, température de l'eau, délai avant la première intervention, température du corps — ces informations orientent des décisions spécialisées à l'hôpital. Vous êtes le seul à les avoir.",
+          incorrect: "Ces informations ne figurent nulle part ailleurs. La noyade a des spécificités importantes. L'âge et le pouls seuls sont insuffisants.",
+          naca: "NACA VI"
+        }
+      }
+    ]
+  },
+
+  // ────────────────────────────────────────────────────────────────
+  // CAS 06 : Accident de moto — Homme 31 ans
+  // ────────────────────────────────────────────────────────────────
+  {
+    id: "IAS3-06",
+    title: "Accident de moto — Homme 31 ans",
+    context: "Fribourg. 19h45. Un motard a été éjecté à grande vitesse après une collision. Le casque est cassé. Il est inconscient sur la route. Sa jambe gauche est tordue et saigne.",
+    questions: [
+      {
+        patient: { hr: 130, spo2: 89, bp: "86/50", rr: 28, gcs: 8, ecg: "sinusal_tachy", state: "semi-conscient" },
+        text: "En approchant du blessé, qu'est-ce que vous cherchez à contrôler en tout premier, avant même la respiration ?",
+        choices: [
+          { text: "Vous stimulez le blessé pour voir s'il réagit", correct: false },
+          { text: "Sa respiration en premier — c'est toujours la priorité absolue", correct: false },
+          { text: "Les saignements importants visibles — un saignement d'artère peut tuer en quelques minutes, avant même un problème respiratoire", correct: true }
+        ],
+        feedback: {
+          correct: "Sur un traumatisme violent, un gros saignement visible d'artère peut tuer en 2-3 minutes. On contrôle d'abord les saignements catastrophiques, puis on évalue la respiration. C'est l'ordre moderne pour les traumatismes.",
+          incorrect: "Sur un traumatisme, un saignement artériel tue plus vite qu'un problème respiratoire. L'ordre est modifié : saignement catastrophique d'abord, voies respiratoires ensuite.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 136, spo2: 88, bp: "82/48", rr: 30, gcs: 8, ecg: "sinusal_tachy", state: "semi-conscient" },
+        text: "La jambe gauche saigne abondamment, le sang gicle au rythme du cœur. Appuyer directement ne suffit pas. Que faites-vous ?",
+        choices: [
+          { text: "Vous surélevez la jambe et mettez plus de compresses en appuyant plus fort", correct: false },
+          { text: "Vous posez un garrot tourniquet à la racine de la cuisse gauche, le plus haut possible, et notez l'heure de pose sur le garrot et dans votre fiche", correct: true },
+          { text: "Vous attendez les secours pour poser le garrot — vous pourriez couper la circulation sans supervision", correct: false }
+        ],
+        feedback: {
+          correct: "Sang pulsatile = artère touchée = garrot immédiat. Le garrot se pose le plus haut possible sur la cuisse. L'heure de pose est OBLIGATOIRE sur le garrot ET la fiche — les médecins doivent savoir depuis combien de temps. C'est dans vos compétences.",
+          incorrect: "Sur une artère sectionnée, appuyer plus fort est insuffisant. Attendre sans garrot peut être fatal. Le garrot est précisément une compétence du secouriste pour cette urgence.",
+          naca: "NACA VI"
+        }
+      },
+      {
+        patient: { hr: 140, spo2: 87, bp: "78/44", rr: 32, gcs: 7, ecg: "sinusal_tachy", state: "semi-conscient" },
+        text: "Vous suspectez un problème dans la cage thoracique — il respire mal et d'un seul côté. Que pouvez-vous faire ?",
+        choices: [
+          { text: "Vous appuyez sur le sternum pour ouvrir les côtes et faciliter la respiration", correct: false },
+          { text: "Vous ne pouvez rien faire — tout ce qui concerne le thorax est pour le médecin uniquement", correct: false },
+          { text: "Vous posez la main sur chaque côté du thorax pour comparer les mouvements, et vous transmettez précisément ce que vous observez au 144", correct: true }
+        ],
+        feedback: {
+          correct: "Observer si les deux côtés du thorax bougent symétriquement est accessible à tout secouriste. Transmettre 'le côté gauche ne se soulève presque pas' aide le médecin à préparer son intervention avant d'arriver.",
+          incorrect: "Appuyer sur le sternum peut aggraver des côtes fracturées. Observer et décrire précisément au 144 est possible et utile pour tout secouriste.",
+          naca: "NACA VI"
+        }
+      },
+      {
+        patient: { hr: 118, spo2: 92, bp: "92/58", rr: 26, gcs: 7, ecg: "sinusal_tachy", state: "semi-conscient" },
+        text: "Le casque intégral doit être retiré pour libérer les voies respiratoires. Comment faites-vous ?",
+        choices: [
+          { text: "Vous retirez le casque seul rapidement — les voies respiratoires sont urgentes", correct: false },
+          { text: "Vous ne retirez jamais le casque — toujours attendre l'hôpital", correct: false },
+          { text: "À deux : le premier maintient la tête et le cou immobiles par en dessous, le second retire le casque doucement en l'écarquillant de chaque côté, puis extraction lente dans l'axe", correct: true }
+        ],
+        feedback: {
+          correct: "Retrait à deux obligatoire : le premier maintient la tête et le cou en axe pendant toute la manœuvre. Le second écarte les côtés du casque et extrait vers le haut dans l'axe. Seul, on risque de bouger le cou sur une fracture invisible.",
+          incorrect: "Seul, on risque d'aggraver une fracture du cou. Attendre l'hôpital n'est pas possible si les voies respiratoires sont compromises. La technique à deux est la règle.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 110, spo2: 97, bp: "102/64", rr: 14, gcs: 7, ecg: "sinusal_tachy", state: "stabilisé" },
+        text: "Pour transporter le blessé vers l'ambulance, quel matériel d'immobilisation utilisez-vous ?",
+        choices: [
+          { text: "Le matelas coquille : il épouse la forme du corps et maintient la tête, le cou, le dos et les membres en position fixe pendant tout le transport", correct: true },
+          { text: "Le collier cervical seul suffit si le blessé est stable", correct: false },
+          { text: "Une planche rigide seule — elle est plus rapide à mettre en place", correct: false }
+        ],
+        feedback: {
+          correct: "Le matelas coquille est la référence pour les traumatismes graves. Il immobilise tout l'axe (cou, dos, jambes) dans une seule coque qui épouse le corps. Le collier seul ne protège que la partie haute du cou.",
+          incorrect: "Le collier protège uniquement la nuque. La planche rigide sert à relever, pas vraiment à transporter. Le matelas coquille est l'outil complet.",
+          naca: "NACA V"
+        }
+      }
+    ]
+  },
+
+  // ────────────────────────────────────────────────────────────────
+  // CAS 07 : Malaise neurologique — Femme 72 ans
+  // ────────────────────────────────────────────────────────────────
+  {
+    id: "IAS3-07",
+    title: "Malaise neurologique — Femme 72 ans",
+    context: "Lausanne, domicile. 10h15. Une femme de 72 ans a soudainement du mal à parler et ne peut plus lever son bras droit. Cela a commencé il y a 10 minutes pendant qu'elle préparait le café.",
+    questions: [
+      {
+        patient: { hr: 88, spo2: 97, bp: "188/112", rr: 18, gcs: 13, ecg: "sinusal_tachy", state: "consciente" },
+        text: "Vous soupçonnez un AVC (accident vasculaire cérébral). Quel test rapide faites-vous en moins de 30 secondes ?",
+        choices: [
+          { text: "Vous lui prenez la tension artérielle — sur AVC elle est toujours très élevée", correct: false },
+          { text: "Test FAST : son visage est-il asymétrique ? Peut-elle lever les deux bras ? Peut-elle répéter une phrase ? Et vous notez l'heure exacte du début des symptômes", correct: true },
+          { text: "Vous lui demandez de fermer les yeux et toucher son nez — c'est le test neurologique standard", correct: false }
+        ],
+        feedback: {
+          correct: "Le test FAST (Visage-Bras-Parole-Temps) est le test de dépistage de l'AVC pour les secouristes. L'heure exacte du début des symptômes est cruciale car le traitement est limité dans le temps.",
+          incorrect: "La tension peut être élevée mais ce n'est pas un test de dépistage. FAST est l'outil adapté et validé.",
+          naca: "NACA IV"
+        }
+      },
+      {
+        patient: { hr: 90, spo2: 96, bp: "192/114", rr: 18, gcs: 13, ecg: "sinusal_tachy", state: "consciente" },
+        text: "Sa tension est très élevée. Le mari veut lui donner son médicament pour la tension. Que faites-vous ?",
+        choices: [
+          { text: "Vous le laissez faire — c'est son traitement habituel prescrit par son médecin", correct: false },
+          { text: "Vous lui demandez de se coucher à plat — ça fait naturellement baisser la tension", correct: false },
+          { text: "Vous refusez de lui donner ce médicament — sur un AVC, la tension élevée aide le cerveau et la baisser pourrait aggraver les dégâts", correct: true }
+        ],
+        feedback: {
+          correct: "Sur un AVC, la tension élevée aide le cerveau à maintenir sa circulation dans la zone touchée. La baisser peut aggraver les lésions. Aucun médicament sans ordre d'un médecin dans ce contexte.",
+          incorrect: "Même un médicament habituel peut être dangereux ici. La tension élevée sur AVC est souvent une réaction protectrice du corps. S'allonger à plat augmente le risque d'étouffement si elle a du mal à avaler.",
+          naca: "NACA IV"
+        }
+      },
+      {
+        patient: { hr: 88, spo2: 96, bp: "190/112", rr: 18, gcs: 13, ecg: "sinusal_tachy", state: "consciente" },
+        text: "Elle prend un médicament qui fluidifie le sang (le mari montre une boîte de Xarelto). Pourquoi est-ce important à transmettre ?",
+        choices: [
+          { text: "Ce n'est pas important pour le moment — les médicaments c'est le problème du médecin à l'hôpital", correct: false },
+          { text: "Ça veut dire qu'elle saigne en interne — vous devez chercher des plaies cachées", correct: false },
+          { text: "Ce médicament peut empêcher le médecin d'utiliser le traitement habituel contre l'AVC — cette information peut changer toute la stratégie", correct: true }
+        ],
+        feedback: {
+          correct: "Ce médicament peut empêcher l'utilisation de certains traitements d'urgence contre l'AVC. Garder la boîte et la transmettre à l'équipe médicale est essentiel — c'est une information qui peut changer toute la prise en charge.",
+          incorrect: "Ce médicament est une information critique pour le médecin qui va la traiter. L'ignorer peut conduire à un traitement dangereux.",
+          naca: "NACA IV"
+        }
+      },
+      {
+        patient: { hr: 86, spo2: 95, bp: "186/110", rr: 16, gcs: 13, ecg: "sinusal_tachy", state: "consciente" },
+        text: "Elle salive beaucoup et a du mal à avaler. Comment la positionnez-vous ?",
+        choices: [
+          { text: "Vous la couchez à plat pour qu'elle soit stable", correct: false },
+          { text: "Vous lui donnez de petites gorgées d'eau pour maintenir l'hydratation", correct: false },
+          { text: "Vous la mettez en position demi-assise avec la tête légèrement inclinée du côté du bras faible, et vous ne lui donnez rien à boire ou manger", correct: true }
+        ],
+        feedback: {
+          correct: "La difficulté à avaler sur AVC signifie que tout liquide peut partir dans les poumons. Position demi-assise, tête vers le côté atteint, rien à boire ou manger. Avoir l'aspiration prête si disponible.",
+          incorrect: "Couchée à plat avec une difficulté à avaler = risque d'étouffement par les sécrétions. Donner de l'eau à quelqu'un qui ne peut pas avaler correctement peut provoquer une pneumonie.",
+          naca: "NACA IV"
+        }
+      },
+      {
+        patient: { hr: 86, spo2: 95, bp: "184/108", rr: 16, gcs: 13, ecg: "sinusal_tachy", state: "consciente" },
+        text: "Le mari paniqué dit qu'il va lui donner son médicament pour la tension. Comment lui répondez-vous ?",
+        choices: [
+          { text: "Vous lui dites sèchement de ne pas intervenir et de vous laisser travailler", correct: false },
+          { text: "Vous le laissez faire — le mari connaît mieux le traitement de sa femme que vous", correct: false },
+          { text: "Vous lui expliquez calmement pourquoi c'est dangereux ici, et vous lui demandez de vous dire l'heure exacte à laquelle les symptômes ont commencé — ça aide vraiment", correct: true }
+        ],
+        feedback: {
+          correct: "Explication calme sans rejeter son aide. Lui donner un rôle concret (l'heure exacte de début) le calme et vous fournit une information médicale précieuse. La famille peut être un atout si elle est bien orientée.",
+          incorrect: "Le repousser sans lui donner un rôle aggrave son anxiété. Laisser donner un médicament contre-indiqué est dangereux.",
+          naca: "NACA IV"
+        }
+      }
+    ]
+  },
+
+  // ────────────────────────────────────────────────────────────────
+  // CAS 08 : Brûlures — Homme 52 ans, incendie
+  // ────────────────────────────────────────────────────────────────
+  {
+    id: "IAS3-08",
+    title: "Brûlures — Homme 52 ans, incendie",
+    context: "Genève. 03h30. Un homme a été sorti d'un appartement en feu par les pompiers. Il a des brûlures sur le visage, le cou et les deux bras. Il a les poils des narines roussis et la voix rauque.",
+    questions: [
+      {
+        patient: { hr: 118, spo2: 91, bp: "136/88", rr: 24, gcs: 14, ecg: "sinusal_tachy", state: "conscient" },
+        text: "Voix rauque, poils des narines roussis, suie autour de la bouche. Quel est le danger principal à signaler en urgence ?",
+        choices: [
+          { text: "La saturation à 91% est préoccupante — vous lui mettez l'oxygène et attendez", correct: false },
+          { text: "Les brûlures sur les bras sont très étendues — c'est la priorité principale", correct: false },
+          { text: "La gorge peut gonfler de l'intérieur et bloquer complètement la respiration en 15-30 minutes — urgence absolue à signaler au 144 maintenant", correct: true }
+        ],
+        feedback: {
+          correct: "Voix rauque + poils roussis + suie = la gorge a inhalé de la fumée chaude. Elle peut gonfler progressivement et bloquer totalement la respiration en 15-30 minutes. C'est l'urgence numéro 1, avant même les brûlures visibles. La saturation peut sembler acceptable mais elle ne détecte pas la fumée inhalée.",
+          incorrect: "Les brûlures cutanées ne tuent pas en quelques minutes. Le gonflement de la gorge par la fumée, oui. La valeur de l'oxymètre est insuffisante seule dans ce contexte.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 120, spo2: 92, bp: "132/84", rr: 22, gcs: 14, ecg: "sinusal_tachy", state: "conscient" },
+        text: "Pour estimer la gravité, vous utilisez la règle des 9 (visage = 4.5%, cou = 1%, chaque bras = 9%). Quelle surface totale est brûlée ?",
+        choices: [
+          { text: "Environ 40% — les bras font 18% chacun", correct: false },
+          { text: "Environ 9% — la tête entière vaut 9%, pas juste le visage", correct: false },
+          { text: "Environ 24% (4.5 + 1 + 9 + 9 = 23.5%)", correct: true }
+        ],
+        feedback: {
+          correct: "Règle des 9 : visage ≈ 4.5%, cou ≈ 1%, chaque bras = 9% → total 23.5%. Plus de 20% = transfert vers un centre spécialisé brûlés. Ce calcul aide à organiser le bon transport.",
+          incorrect: "La tête entière = 9% (visage avant ≈ 4.5%, arrière ≈ 4.5%). Chaque bras = 9% (pas 18%). Mémo : tête 9%, chaque bras 9%, thorax avant 9%, dos 9%, chaque cuisse 9%, chaque jambe 7%.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 122, spo2: 92, bp: "130/82", rr: 22, gcs: 14, ecg: "sinusal_tachy", state: "conscient" },
+        text: "Comment refroidissez-vous correctement les brûlures ?",
+        choices: [
+          { text: "Eau à environ 15°C pendant 20 minutes maximum. Si les brûlures couvrent plus de 20% du corps, vous refroidissez seulement les zones brûlées, pas tout le corps", correct: true },
+          { text: "Eau la plus froide possible avec de la glace — plus c'est froid, mieux ça arrête la brûlure", correct: false },
+          { text: "Pas de refroidissement — l'eau froide aggrave les brûlures profondes", correct: false }
+        ],
+        feedback: {
+          correct: "15°C pendant 20 minutes max. L'eau très froide (glace) aggrave les brûlures et peut refroidir tout le corps dangereusement. Sur grande surface (plus de 20%), refroidissement localisé uniquement.",
+          incorrect: "La glace aggrave les brûlures et risque de refroidir tout le corps dangereusement. Ne pas refroidir du tout est aussi une erreur — appliqué tôt, le refroidissement réduit la profondeur de la brûlure.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 124, spo2: 92, bp: "128/80", rr: 22, gcs: 13, ecg: "sinusal_tachy", state: "conscient" },
+        text: "Le patient a très mal (8/10). Vous n'avez pas de médicament antidouleur. Que pouvez-vous faire ?",
+        choices: [
+          { text: "Vous ne pouvez rien faire contre la douleur sans médicament — attendez les secours médicaux", correct: false },
+          { text: "Vous lui donnez du paracétamol de votre trousse", correct: false },
+          { text: "Vous continuez le refroidissement à l'eau (qui soulage la douleur), vous le couvrez, vous le rassurez par la parole, et signalez la douleur au 144 pour qu'ils anticipent", correct: true }
+        ],
+        feedback: {
+          correct: "Le refroidissement à l'eau a un effet antidouleur direct. La couverture évite le froid qui aggrave la douleur. La parole rassurante diminue l'anxiété et donc la douleur. Signaler la douleur au 144 permet aux secours d'anticiper.",
+          incorrect: "Le paracétamol seul est insuffisant pour une douleur à 8/10. Attendre sans agir alors que vous pouvez aider (refroidissement, couverture, parole) n'est pas acceptable.",
+          naca: "NACA V"
+        }
+      },
+      {
+        patient: { hr: 116, spo2: 93, bp: "126/78", rr: 20, gcs: 14, ecg: "sinusal", state: "conscient" },
+        text: "À quel type d'hôpital doit aller ce patient, et pourquoi ?",
+        choices: [
+          { text: "N'importe quelles urgences — un centre spécialisé brûlés n'est nécessaire qu'au-dessus de 50% de surface brûlée", correct: false },
+          { text: "L'hôpital le plus proche — la rapidité prime sur la spécialisation pour les brûlures", correct: false },
+          { text: "Un centre spécialisé brûlés : il a plus de 20% de surface brûlée, le visage et le cou sont touchés, et il a probablement inhalé de la fumée — trois critères de transfert spécialisé", correct: true }
+        ],
+        feedback: {
+          correct: "Ce patient cumule plusieurs critères pour un centre spécialisé : surface plus de 20%, zones critiques (visage, cou) et inhalation de fumée suspectée. En Suisse : CHUV Lausanne ou hôpital universitaire de Zurich. Les secours médicaux organisent le bon transport.",
+          incorrect: "La proximité ne prime pas sur la spécialisation pour les brûlures graves. Le seuil de 50% est obsolète — les critères actuels incluent les zones critiques et l'inhalation.",
+          naca: "NACA V"
+        }
+      }
+    ]
+  }
+
+];
+
+// ═══════════════════════════════════════════════════════════════
+// SECUR-QUIZ | Données Catastrophe / IMV
+// Protocoles : START, METHANE, TRACER, PMA, ORCA Canton
+// Format : chaque cas = { id, title, situation:{}, questions[] }
+// ─────────────────────────────────────────────────────────────
+// AJOUT D'UN CAS :
+//   1. Copier un bloc existant (CAT-01 ou CAT-02)
+//   2. Incrémenter l'id : CAT-03, CAT-04, etc.
+//   3. Chaque cas a 15 questions (12 normales + 3 EVASAN en fin)
+//   4. Pour les questions à choix multiples : ajouter multiSelect:true
+//      et définir plusieurs choices avec correct:true
+//   5. Sauvegarder — le moteur charge les cas aléatoirement
+// ═══════════════════════════════════════════════════════════════
+
+const CAT_CASES = [
+
+    // ────────────────────────────────────────────────────────────────
+    // CAT-01 : Accident de car scolaire — Route du Grand-Saint-Bernard
+    // ────────────────────────────────────────────────────────────────
+    {
+      id: "CAT-01",
+      title: "Carambolage car scolaire — Route du Grand-Saint-Bernard",
+      situation: {
+        meteo: "Neige légère, visibilité 200m, route verglacée",
+        incident: "Car scolaire 52 passagers percuté par camion, sortie de route, falaise de 4m",
+        victimes_estimees: "~40 victimes dont 35 enfants (8-14 ans)",
+        time: "T0 + 3 min",
+        description: "Vous êtes la première ambulance sur les lieux. Le car est couché sur le flanc. Des enfants sortent seuls, d'autres restent coincés. Fumée visible côté moteur.",
+        visual: "🚌💥🏔️"
+      },
+      questions: [
+        {
+          phase: "ambulance",
+          patient: null,
+          text: "METHANE : vous êtes 1er arrivé. Première transmission à la centrale ?",
+          choices: [
+            { text: "M: Zone sécurisée non / E: Car scolaire vs camion, falaise / T: ~40 victimes / H: 1 ambulance / A: Route du GSB, km 12 / N: Triage START en cours / E: Renfort SMUR x3, pompiers, hélico", correct: true },
+            { text: "Appeler le nombre exact de blessés avant transmission — précision avant tout", correct: false },
+            { text: "Commencer les soins et transmettre METHANE plus tard quand on a une idée précise", correct: false }
+          ],
+          feedback: {
+            correct: "✅ METHANE = outil de transmission IMV. La précision n'est pas possible à T0. L'estimation rapide et la demande de renforts adaptés sont plus importantes que l'exactitude. La centrale a besoin des infos pour déclencher le plan ORCA (Suisse).",
+            incorrect: "❌ Attendre d'avoir toutes les informations = retarder les renforts. METHANE se transmet incomplet si nécessaire — le 'H' (ressources) et le 'E' (secours demandés) sont critiques pour déclencher le plan ORCA.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: null,
+          multiSelect: true,
+          text: "Zone de danger : fumée au moteur, risque incendie. Parmi ces actions, lesquelles sont CORRECTES pour sécuriser la zone ? (plusieurs réponses possibles)",
+          choices: [
+            { text: "Établir 3 zones concentriques (chaude/tiède/froide) et baliser le périmètre", correct: true },
+            { text: "Reculer toutes les victimes valides à >50m du véhicule incendié", correct: true },
+            { text: "Ne pas entrer dans le car sans équipement de protection incendie — attendre les pompiers pour la zone chaude", correct: true },
+            { text: "Entrer immédiatement dans le car pour traiter les victimes — l'urgence prime sur la sécurité personnelle", correct: false },
+            { text: "Une zone de sécurité de 10m suffit pour une fumée légère sans flamme visible", correct: false }
+          ],
+          feedback: {
+            correct: "Correct. Les 3 zones IMV, l'éloignement des victimes valides et le respect de la zone chaude sont les trois piliers de la sécurisation. Créer de nouvelles victimes dans l'équipe est la pire erreur.",
+            incorrect: "Incomplet ou incorrect. Sur un véhicule avec fumée moteur, le risque d'incendie et d'explosion est réel. Les 3 zones, l'éloignement à >50m et l'attente des pompiers pour la zone chaude sont non-négociables.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: null,
+          text: "Vous devez trier 38 victimes seul pendant 8 min avant renfort. Quel algorithme utilisez-vous ?",
+          choices: [
+            { text: "Triage START : Marche → Rouge/Jaune/Vert/Noir. Pas de soin pendant le triage sauf ouverture des voies aériennes", correct: true },
+            { text: "Trier par ordre de découverte des victimes, traiter chaque blessé complètement avant de passer au suivant", correct: false },
+            { text: "Trier uniquement les enfants d'abord, puis les adultes", correct: false }
+          ],
+          feedback: {
+            correct: "✅ START (Simple Triage And Rapid Treatment) : 1) Victimes qui marchent = VERT. Sur les autres : 2) Respiration ? 3) FR >30 = ROUGE. 4) Pouls radial ? 5) État de conscience ? Seule manœuvre autorisée = sublimaze voies aériennes. Temps par victime : <30 secondes.",
+            incorrect: "❌ Traiter complètement chaque victime en IMV = erreur stratégique. On ne soigne pas pendant le triage START. L'âge ne modifie pas le triage START (même algorithme enfants/adultes).",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: { hr: 140, spo2: null, bp: null, rr: 36, gcs: 10, ecg: null, state: "obnubilé" },
+          text: "Victime A : enfant 10 ans, FR 36/min, pouls radial filant, GCS 10. Triage START ?",
+          choices: [
+            { text: "ROUGE — FR >30 + pouls filant + GCS altéré = détresse vitale immédiate", correct: true },
+            { text: "JAUNE — conscient, peut attendre", correct: false },
+            { text: "NOIR — trop instable pour survie", correct: false }
+          ],
+          feedback: {
+            correct: "✅ ROUGE = urgence absolue. FR >30 suffit pour classer ROUGE en START. Ici : FR 36 + pouls filant + GCS 10 = triple critère rouge. Balise rouge posée, victime laissée sur place en attendant la phase soins.",
+            incorrect: "❌ JAUNE = urgence relative (stable, peut attendre). NOIR = décédé ou survie improbable. FR 36/min seule classe déjà en ROUGE dans le triage START.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: { hr: null, spo2: null, bp: null, rr: 0, gcs: 3, ecg: null, state: "apnée" },
+          text: "Victime B : adulte, apnée après ouverture des voies aériennes. Triage START ?",
+          choices: [
+            { text: "NOIR — victime en apnée malgré libération des voies aériennes en IMV = non-prioritaire", correct: true },
+            { text: "ROUGE — commencer RCP immédiate", correct: false },
+            { text: "JAUNE — inconscient mais peut se révéler", correct: false }
+          ],
+          feedback: {
+            correct: "✅ En IMV avec ressources limitées : victime apnéique malgré libération des VAS = NOIR. La RCP monopolise 2 secouristes pour 1 victime à pronostic incertain quand d'autres ROUGE peuvent être sauvés. Décision difficile mais éthiquement défendable.",
+            incorrect: "❌ En IMV, la RCP immédiate sur chaque arrêt est impossible — elle utiliserait toutes les ressources pour une victime. Le triage START classe cette victime NOIR. Cette décision sera réévaluée si renforts suffisants.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: { hr: 88, spo2: null, bp: null, rr: 16, gcs: 15, ecg: null, state: "conscient" },
+          text: "30 enfants marchent et pleurent. Triage ?",
+          choices: [
+            { text: "VERT — victimes ambulatoires en IMV START. Les diriger vers zone froide sans examen individuel complet", correct: true },
+            { text: "Examiner chaque enfant individuellement malgré le nombre — les enfants peuvent masquer des lésions", correct: false },
+            { text: "Jaune — les enfants sont fragiles, prudence systématique", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Marchent = VERT dans le triage START. Zone froide, comptage, surveil global. La contre-intuitivité de ne pas s'arrêter sur chaque enfant est réelle mais nécessaire pour sauver les ROUGE. Un 2ème triage (SIEVE) sera fait plus tard.",
+            incorrect: "❌ Examiner 30 enfants individuellement = 30-45 minutes pendant lesquelles les ROUGE ne sont pas traités. Le triage START est conçu précisément pour cette situation.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: null,
+          text: "Le PMA (Poste Médical Avancé) doit être établi. Où le positionnez-vous ?",
+          choices: [
+            { text: "Zone tiède, vent dans le dos par rapport au véhicule (fumée), accessible aux ambulances, signal visible, à l'abri des intempéries si possible", correct: true },
+            { text: "Le plus près du car pour réduire les distances de transport des victimes", correct: false },
+            { text: "Sur la route principale pour être visible des renforts", correct: false }
+          ],
+          feedback: {
+            correct: "✅ PMA : zone tiède (ni dans le danger, ni trop loin), protection du vent toxique, accès ambulances pour évacuation, signalisation (drapeau blanc-rouge). La proximité du danger est un risque, la route principale est dangereuse pour les secouristes.",
+            incorrect: "❌ PMA trop proche = exposition au danger (fumée, incendie). PMA sur route = risque de sur-accident. La position doit équilibrer accès et sécurité.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: null,
+          text: "La gendarmerie veut passer la zone pour récupérer des témoins. Que faites-vous ?",
+          choices: [
+            { text: "Coordonner avec le responsable gendarmerie : accès zone tiède autorisé, zone chaude réservée pompiers et SMUR. Désigner un point de rencontre gendarmerie en zone froide.", correct: true },
+            { text: "Interdire tout accès à la zone — les secouristes sont seuls responsables", correct: false },
+            { text: "Laisser passer la gendarmerie librement, chacun fait son travail", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Gestion multi-agences : la police, pompiers, SMUR et ambulanciers ont des rôles complémentaires. Coordination et délimitation des zones selon compétences. Un officier de liaison inter-services améliore l'efficacité.",
+            incorrect: "❌ Interdire tout accès perturbe la coordination. Laisser passer sans coordination crée la confusion. La gestion de l'espace IMV nécessite une coordination active.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: { name: "Enfant A", hr: 134, spo2: 88, bp: "82/48", rr: 38, gcs: 9, ecg: "sinusal_tachy", state: "semi-conscient" },
+          multiSelect: true,
+          text: "Premier ROUGE au PMA : enfant 10 ans, FR 38, SpO₂ 88%, TA 82/48, GCS 9. Quelles sont vos TROIS premières actions ? (plusieurs réponses possibles)",
+          choices: [
+            { text: "Ouvrir une fiche TRACER et identifier le patient (bracelet couleur rouge)", correct: true },
+            { text: "O₂ 15L/min masque HC + scope cardiaque + monitoring SpO₂ continu", correct: true },
+            { text: "Poser 2 VVP larges calibre (≥16G) et prélever un bilan sanguin si disponible", correct: true },
+            { text: "Commencer la réanimation sans fiche TRACER — la paperasse peut attendre", correct: false },
+            { text: "Attendre le médecin PMA avant d'initier tout soin — hors compétence IAS3", correct: false }
+          ],
+          feedback: {
+            correct: "Excellent. TRACER + O₂/monitoring + VVP sont les 3 piliers d'accueil au PMA. La fiche TRACER est une exigence légalo-médicale — elle permet la traçabilité des soins et l'évacuation coordonnée.",
+            incorrect: "Incomplet. Au PMA, toute action doit être tracée, l'O₂ et le monitoring sont immédiats, et la VVP prépare toute thérapeutique médicale. Ces 3 actions sont simultanées, pas séquentielles.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: { hr: 144, spo2: 88, bp: "80/46", rr: 38, gcs: 9, ecg: "sinusal_tachy", state: "obnubilé", name: "Patient A" },
+          text: "Enfant A — choc hémorragique suspecté (trauma abdominal, abdomen tendu). Remplissage vasculaire ?",
+          choices: [
+            { text: "NaCl 0.9% ou Ringer lactate 10-20 mL/kg en bolus, réévaluation après chaque bolus, objectif TA systolique >80 mmHg sur trauma hémorragique", correct: true },
+            { text: "500 mL rapidement sans réévaluation pour restaurer la volémie vite", correct: false },
+            { text: "Éviter tout remplissage — risque de dilution des facteurs coagulation", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Réanimation permissive : TA systolique cible 80-90 mmHg sur trauma hémorragique non contrôlé (éviter HTA qui aggrave le saignement). Bolus 10-20 mL/kg avec réévaluation. Chez l'enfant : 10 mL/kg pour limiter surcharge.",
+            incorrect: "❌ 500 mL d'emblée sans réévaluation = risque d'hémodilution et d'aggravation du saignement (hypertension artérielle sur trauma hémorragique non contrôlé). Pas de remplissage du tout = inadéquat sur TA 80 mmHg.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: { hr: 118, spo2: 92, bp: "88/56", rr: 32, gcs: 10, ecg: "sinusal_tachy", state: "obnubilé", name: "Patient B — Adulte, brûlures 35%" },
+          text: "Patient B : adulte 35 ans, brûlures 35% (abdomen, cuisses), conscient. Soins brûlés au PMA ?",
+          choices: [
+            { text: "Refroidissement eau 15°C localisé <20 min, pansement non adhérent, ne pas percer les phlyctènes, VVP + remplissage Parkland, antalgique, orientation CHUV brûlés", correct: true },
+            { text: "Refroidir avec la neige disponible sur place — eau fraiche naturelle idéale", correct: false },
+            { text: "Percer les phlyctènes pour réduire les tensions cutanées", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Protocole BSC brûlés PMA : eau 15°C, pas neige (trop froide <5°C), <20 min (hypothermie sur 35%!), pansement non-adhérent, phlyctènes intacts (protection contre infection), formule Parkland VVP. Orientation centre brûlés CHUV obligatoire.",
+            incorrect: "❌ La neige (<5°C) aggrave les lésions par vasoconstriction et risque hypothermie sur 35% SCB. Percer les phlyctènes en urgence pré-hospitalière augmente le risque infectieux sans bénéfice.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: { hr: 68, spo2: 97, bp: "118/74", rr: 14, gcs: 15, ecg: "sinusal", state: "conscient", name: "Patient C — Vert, choc émotionnel" },
+          text: "Patient C : adolescente 14 ans, physiquement indemne, mais état de panique, hyperventilation, pleurs incontrôlables. Prise en charge ?",
+          choices: [
+            { text: "Zone psychologique (cellule de crise), soutien UPCPP ou bénévoles formés, contact physique si consenti, respiration guidée, informer sur les proches", correct: true },
+            { text: "Sédation légère (midazolam 2mg) pour calmer la crise — efficacité immédiate", correct: false },
+            { text: "Ignorer pour l'instant — les ROUGE sont prioritaires, elle est VERTE", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Les VERT ont besoin de soutien psychologique structuré. L'hyperventilation peut se compliquer (tétanie, malaise). Zone psy dédiée, présence humaine, respiration guidée (4-7-8). Appel UPCPP (Unité de crise) si disponible.",
+            incorrect: "❌ Sédation d'un VERT sans indication médicale = surdosage de ressources et risque iatrogène. Ignorer les VERT génère des complications psychologiques (PTSD) et peut évoluer vers une crise ROUGE (malaise vagal).",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: { hr: 88, spo2: 95, bp: "108/68", rr: 18, gcs: 14, ecg: "sinusal", state: "conscient", name: "Patient A — 2ème évaluation" },
+          text: "Réévaluation Patient A (enfant) après 15 min : amélioration — TA 108/68, HR 88. Comment reclassez-vous ce patient ?",
+          choices: [
+            { text: "Réévaluation triage : JAUNE si stable, aucune urgence vitale immédiate — modifier la fiche TRACER et réorganiser l'évacuation", correct: true },
+            { text: "Garder ROUGE — le triage initial ne change jamais", correct: false },
+            { text: "Reclasser VERT si TA normalisée — évacuation non urgente", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Le triage est dynamique en IMV. Un patient stabilisé peut être reclassé. ROUGE → JAUNE = optimisation des ressources. La fiche TRACER documente l'évolution. L'évacuation est réorganisée selon la nouvelle priorité.",
+            incorrect: "❌ Le triage fixe est une erreur. Un patient qui s'améliore libère des ressources ROUGE pour d'autres. Reclasser VERT trop tôt est prématuré — l'enfant a un trauma abdominal non encore exploré.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: null,
+          text: "Hélicoptère REGA disponible pour 1 évacuation. Qui priorisez-vous parmi : Enfant A (JAUNE, abdomen), Patient B (ROUGE, brûlures 35%), adolescente C (VERT) ?",
+          choices: [
+            { text: "Patient B (ROUGE, brûlures 35%) : urgence absolue, nécessite centre brûlés CHUV, stabilité relative permettant transport héliporté", correct: true },
+            { text: "Enfant A : les enfants sont toujours prioritaires en évacuation", correct: false },
+            { text: "Adolescente C : la plus légère, transport plus facile en hélico", correct: false }
+          ],
+          feedback: {
+            correct: "✅ L'évacuation héliportée est réservée au patient le plus grave nécessitant un centre spécialisé. Patient B = ROUGE + brûlures >20% + nécessité centre brûlés. L'hélico permet atteindre CHUV en 20 min vs 2h de route.",
+            incorrect: "❌ L'âge ne détermine pas la priorité d'évacuation. La criticité clinique + la nécessité d'un centre spécialisé + la fenêtre thérapeutique orientent le choix. L'adolescente VERTE n'a pas d'indication héliportée.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: null,
+          multiSelect: true,
+          text: "Fin d'intervention. Le responsable SMUR demande votre bilan IMV pour le rapport ORCA. Quels éléments sont OBLIGATOIRES dans ce bilan ? (plusieurs réponses possibles)",
+          choices: [
+            { text: "Nombre total de victimes et répartition triage (ROUGE / JAUNE / VERT / NOIR)", correct: true },
+            { text: "Soins administrés au PMA par catégorie et évacuations avec destinations hospitalières", correct: true },
+            { text: "Heure de déclenchement du plan, ressources engagées et heure de levée du dispositif", correct: true },
+            { text: "Uniquement les noms et prénoms des victimes hospitalisées — les autres ne comptent pas", correct: false },
+            { text: "Les erreurs de triage — usage interne uniquement, à exclure du rapport officiel", correct: false }
+          ],
+          feedback: {
+            correct: "Complet. Le rapport ORCA exige : répartition triage, soins et évacuations, chronologie et ressources. C'est un document médico-légal transmis au Canton. Les erreurs font l'objet d'un RETEX séparé.",
+            incorrect: "Incomplet. Le bilan ORCA est un document structuré exigé par les autorités cantonales. Il comprend la chronologie, les effectifs victimes par triage, les soins et les évacuations.",
+            naca: null
+          }
+        }
+      ]
+    },
+
+    // ────────────────────────────────────────────────────────────────
+    // CAT-02 : Explosion de gaz — Immeuble résidentiel, Bern
+    // ────────────────────────────────────────────────────────────────
+    {
+      id: "CAT-02",
+      title: "Explosion de gaz — Immeuble 4 étages, Berne",
+      situation: {
+        meteo: "Nuit, 3°C, pluie fine",
+        incident: "Explosion gaz naturel rez-de-chaussée, effondrement partiel escaliers central",
+        victimes_estimees: "~25 victimes, 12 personnes encore dans le bâtiment",
+        time: "T0 + 5 min",
+        description: "Immeuble de 20 appartements. Escalier central effondré, accès impossible aux étages supérieurs. Odeur de gaz persistante. Certains résidents se jettent depuis les fenêtres (2ème étage).",
+        visual: "🏢💥🔥"
+      },
+      questions: [
+        {
+          phase: "ambulance",
+          patient: null,
+          multiSelect: true,
+          text: "Odeur de gaz persistante dans un immeuble. Vous arrivez en premier. Lesquelles de ces actions sont CORRECTES avant toute intervention ? (plusieurs réponses possibles)",
+          choices: [
+            { text: "Ne pas entrer dans le bâtiment — risque d'explosion par étincelle ou allumage accidentel", correct: true },
+            { text: "Couper le courant électrique depuis le tableau extérieur si accessible et sécurisé", correct: true },
+            { text: "Éloigner toutes les personnes à >100m et établir un périmètre de sécurité", correct: true },
+            { text: "Utiliser la radio dans la zone pour alerter la centrale — l'urgence prime sur tout", correct: false },
+            { text: "Entrer rapidement pour extraire les victimes — l'odeur de gaz se disperse vite à l'air libre", correct: false }
+          ],
+          feedback: {
+            correct: "Exact. Ne pas entrer, couper le courant depuis l'extérieur et éloigner à >100m sont les 3 réflexes obligatoires. La radio dans une zone de gaz peut déclencher l'explosion par étincelle électronique — utiliser le téléphone depuis l'extérieur.",
+            incorrect: "Incorrect ou insuffisant. La radio dans la zone de gaz est une cause fréquente d'explosion. Entrer sans équipement spécialisé est interdit. Attendre les pompiers HAZCHEM avant toute pénétration.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: { hr: 0, spo2: 0, bp: "—", rr: 0, gcs: 3, ecg: null, state: "arrêt" },
+          text: "Victime extraite par pompiers : homme adulte, brûlures >70% surface, GCS 3, apnée, pas de pouls. Triage ?",
+          choices: [
+            { text: "NOIR — brûlures >70%, apnée sans réponse = non survivable en contexte IMV. Pas de RCP.", correct: true },
+            { text: "ROUGE — commencer RCP, brûlures ne contre-indiquent pas la réanimation", correct: false },
+            { text: "JAUNE — attendre SMUR pour décision médicale", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Brûlures >70% de la surface corporelle + ACR = pronostic quasi-nul même en milieu hospitalier spécialisé. En IMV avec ressources limitées, la RCP est contre-indiquée. NOIR = décision médicale validée par triage IMV.",
+            incorrect: "❌ En IMV, la RCP sur une victime à mortalité >98% monopolise 2 secouristes et des ressources pour une chance quasi-nulle. La règle IMV est : utiliser les ressources où elles peuvent changer le pronostic.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: { hr: 118, spo2: 90, bp: "128/82", rr: 24, gcs: 14, ecg: "sinusal_tachy", state: "conscient" },
+          text: "Victime sautée du 2ème étage (~5 mètres) : femme 32 ans, consciente, douleur cheville et dos. Triage et suspicion lésionnelle ?",
+          choices: [
+            { text: "JAUNE — trauma mécanisme hauteur >4m, suspicion rachis thoracolombaire, stabilisation cervicale, transport médicalisé. FR/FC/TA/GCS normaux.", correct: true },
+            { text: "VERT — elle marche, trauma mineur", correct: false },
+            { text: "ROUGE — tout trauma de hauteur = rouge par défaut", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Chute >4m = mécanisme à énergie significative. Douleur dorsale = suspicion fracture rachidienne jusqu'à preuve du contraire. JAUNE : stable mais nécessite transport médicalisé et immobilisation. Pas VERT malgré déambulation (fractures de Peterson non évoluées).",
+            incorrect: "❌ Marcher après une chute de 5m ne garantit pas l'absence de fracture rachidienne instable. ROUGE requiert une instabilité vitale — ici absente. JAUNE est le triage adapté.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: null,
+          text: "8 personnes sont encore aux étages supérieurs, criantes aux fenêtres. Les pompiers sont en cours d'installation d'une grande échelle. Que transmettez-vous au responsable PMA ?",
+          choices: [
+            { text: "Nombre estimé, étages concernés, fenêtres actives, état apparent (panique vs blessés), accès pompiers en cours, ETA grande échelle", correct: true },
+            { text: "Attendre que les pompiers aient sorti tout le monde avant de transmettre — pas d'info partielle", correct: false },
+            { text: "Leur crier de sauter — la grande échelle prendra trop de temps", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Transmission continue et progressive au PMA permet l'anticipation : 8 victimes potentielles supplémentaires → ressources ajustées. L'information partielle est toujours meilleure que l'absence d'information.",
+            incorrect: "❌ Encourager des personnes à sauter depuis le 2ème ou 3ème étage = lésions graves prévisibles. L'info partielle transmise est plus utile qu'une info retardée parfaite.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: { name: "Victime CO", hr: 108, spo2: 88, bp: "138/88", rr: 20, gcs: 14, ecg: "sinusal_tachy", state: "céphalée sévère" },
+          multiSelect: true,
+          text: "Victime extraite : homme 58 ans, intoxication CO confirmée. Lesquelles de ces actions sont CORRECTES ? (plusieurs réponses possibles)",
+          choices: [
+            { text: "O₂ 100% masque HC 15L/min en continu — même si SpO₂ affiche 88% (le CO fausse l'oxymétrie)", correct: true },
+            { text: "Scope cardiaque et ECG 12 dérivations si disponible (risque de troubles du rythme sur CO)", correct: true },
+            { text: "VVP + signalement au centre de régulation pour caisson hyperbare si COHb >25% ou signes neuro", correct: true },
+            { text: "O₂ lunettes nasales 2L/min — suffisant pour une intoxication légère à modérée", correct: false },
+            { text: "Ventiler au BAVU immédiatement car SpO₂ 88% indique une insuffisance respiratoire sévère", correct: false }
+          ],
+          feedback: {
+            correct: "Correct. Sur intoxication CO : O₂ 100% HC est le traitement de base même si le SpO₂ paraît normal — le capteur ne distingue pas HbO₂ et HbCO. Le scope détecte les arythmies. Le caisson hyperbare est indiqué si COHb >25%.",
+            incorrect: "Incomplet ou incorrect. L'oxymètre de pouls ne distingue pas HbCO — le SpO₂ affiché est faux sur intoxication CO. O₂ HC 15L/min est le traitement de choix. Le BAVU n'est pas indiqué si le patient ventile spontanément.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: null,
+          text: "Une journaliste et un caméraman franchissent le cordon pour filmer. Que faites-vous ?",
+          choices: [
+            { text: "Les rediriger fermement vers la zone presse en zone froide, sans violence. Informer le responsable sécurité.", correct: true },
+            { text: "Les laisser filmer — liberté de la presse, et ils peuvent documenter les secours", correct: false },
+            { text: "Appeler immédiatement la police pour arrestation", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Zone tiède = accès restreint pour des raisons de sécurité et de soins. La presse a accès à la zone froide. Redirection ferme sans violence. Le responsable sécurité gère les relations médias.",
+            incorrect: "❌ Les médias dans la zone tiède = risque sécurité + perturbation des soins + violation confidentialité des victimes filmées. L'arrestation est disproportionnée pour une redirection ferme.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: { hr: 148, spo2: 86, bp: "78/44", rr: 36, gcs: 9, ecg: "sinusal_tachy", state: "obnubilé", name: "Patient A — ROUGE, brûlures 25% + CO" },
+          text: "PMA. Patient A : ROUGE, brûlures 25%, CO suspecté, TA 78, FR 36. Simultanément, Patient B (ROUGE, pneumothorax) vient d'arriver. Vous êtes seul au poste de soins. Que faites-vous ?",
+          choices: [
+            { text: "Patient A : O₂ HC en cours, VVP posée, stabilisé partiellement → aide-ambulancier prend le relais. Vous évaluez Patient B (pneumothorax = risque plus immédiat). Appeler renfort.", correct: true },
+            { text: "Finir complètement Patient A avant de toucher Patient B", correct: false },
+            { text: "Évaluer les 2 simultanément sans priorisation", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Priorisation dynamique au sein des ROUGE : le pneumothorax sous tension évolue en minutes vers l'arrêt cardiaque. Patient A partiellement stabilisé peut être délégué à l'aide-ambulancier le temps d'évaluer Patient B.",
+            incorrect: "❌ Finir complètement un patient avant de voir l'autre ROUGE peut laisser mourir Patient B d'un pneumothorax sous tension. L'évaluation simultanée sans priorisation est inefficace.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: { hr: 56, spo2: 84, bp: "86/60", rr: 10, gcs: 12, ecg: "sinusal_brady", state: "obnubilé", name: "Patient B — Pneumothorax sous tension" },
+          text: "Patient B : trachée déviée à droite, silence auscultatoire gauche, TA chute. Diagnostic et transmission ?",
+          choices: [
+            { text: "Pneumothorax sous tension — urgence vitale absolue. Transmission SMUR immédiate pour exsufflation à l'aiguille (2ème EIC, ligne médioclaviculaire gauche). Hors compétence IAS 3.", correct: true },
+            { text: "Commencer vous-même l'exsufflation à l'aiguille — urgence vitale justifie l'acte", correct: false },
+            { text: "Attendre la radio thorax pour confirmer avant d'appeler", correct: false }
+          ],
+          feedback: {
+            correct: "✅ PTx sous tension : trachée déviée + silence auscultatoire + choc = diagnostic clinique, pas radiologique. Délai d'exsufflation = mort. L'IAS 3 reconnaît, signale, prépare matériel. L'acte est médical. Transmission SMUR en urgence absolue.",
+            incorrect: "❌ L'exsufflation à l'aiguille sans formation spécifique et délégation = acte illégal et risque iatrogène. La radio est inutile — le diagnostic est clinique et l'urgence ne permet pas d'attendre.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: { hr: 102, spo2: 92, bp: "108/68", rr: 22, gcs: 14, ecg: "sinusal", state: "conscient", name: "Patient C — JAUNE, fracture rachis suspectée" },
+          text: "Patient C (chute 5m, douleur dos) : immobilisée, mais veut retirer le collier cervical 'trop inconfortable'. Que faites-vous ?",
+          choices: [
+            { text: "Expliquer le risque de lésion médullaire irréversible, proposer ajustement du collier si mal positionné, maintenir l'immobilisation jusqu'à confirmation radiologique", correct: true },
+            { text: "Retirer le collier : elle est consciente et le confort est important", correct: false },
+            { text: "Attacher le collier plus serré pour qu'elle ne puisse pas le retirer", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La fracture rachidienne instable peut être asymptomatique au repos. L'inconfort du collier vs la paralysie permanente = explication efficace. Vérifier l'ajustement du collier (taille, position) peut améliorer le confort sans compromettre l'immobilisation.",
+            incorrect: "❌ Retirer le collier sur suspicion rachidienne = risque de paraplégie si fracture instable. Serrer plus fort = douleur et pression vasculaire. L'éducation et l'ajustement sont la réponse.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: { hr: 78, spo2: 97, bp: "118/74", rr: 16, gcs: 15, ecg: "sinusal", state: "conscient", name: "Patient D — VERT, intoxication CO légère" },
+          text: "Patient D : intoxication CO légère, traité par O₂ HC, céphalée résiduelle. Il vous demande si sa femme (non retrouvée) est dans la liste des victimes. Que répondez-vous ?",
+          choices: [
+            { text: "Exprimer de l'empathie, lui expliquer qu'un responsable de l'identification des victimes gère cette information, lui donner un contact (police/cellule psychologique)", correct: true },
+            { text: "Lui dire qu'elle n'est pas dans la liste des blessés — pour le rassurer", correct: false },
+            { text: "Ignorer la question, concentrez-vous sur ses soins", correct: false }
+          ],
+          feedback: {
+            correct: "✅ L'IAS 3 ne gère pas l'identification des victimes — c'est la police et la cellule de crise. Mentir 'pour rassurer' peut causer un choc ultérieur. L'orientation vers le bon interlocuteur est professionnelle et honnête.",
+            incorrect: "❌ Inventer une information (la femme n'est pas blessée) est un mensonge avec des conséquences émotionnelles sévères si faux. Ignorer la question d'un patient anxieux nuit à la relation thérapeutique.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: null,
+          text: "Fin d'intervention. Un des secouristes de votre équipe est très affecté (il a vu un enfant décédé). Comment gérez-vous cela ?",
+          choices: [
+            { text: "Valider ses émotions en privé, l'exclure temporairement des soins si nécessaire, informer le responsable pour débriefing psychologique (CIST), ne pas minimiser", correct: true },
+            { text: "Lui dire 'c'est le boulot, pas le temps de craquer ici' et continuer", correct: false },
+            { text: "Garder le secret pour protéger sa réputation professionnelle", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La santé mentale des secouristes est une priorité opérationnelle. Un secouriste en état de choc est un risque pour lui-même et les patients. CIST (Critical Incident Stress Team) ou debriefing post-IMV sont des ressources formelles.",
+            incorrect: "❌ Minimiser le stress post-traumatique d'un collègue augmente le risque de PTSD et de burn-out. Le 'ça passe' n'est pas une stratégie de gestion du stress post-critique.",
+            naca: null
+          }
+        },
+        {
+          phase: "ambulance",
+          patient: null,
+          text: "Bilan à T0+30min : 18 victimes triées (4 ROUGE, 7 JAUNE, 5 VERT, 2 NOIR). 3 ambulances disponibles. Ordre d'évacuation ?",
+          choices: [
+            { text: "ROUGE en premier (2 par ambulance si stable, sinon 1 + SMUR), puis JAUNE, VERT derniers. NOIR restent sur zone sous surveillance.", correct: true },
+            { text: "Charger le maximum de patients par ambulance quelle que soit la priorité", correct: false },
+            { text: "Évacuer les VERT d'abord pour libérer de l'espace au PMA", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Ordre d'évacuation IMV : ROUGE > JAUNE > VERT. Un ROUGE peut partager une ambulance avec un ROUGE stable. Les NOIR restent au PMA — ils ne sont pas abandonnés mais ne sont pas prioritarisés pour évacuation.",
+            incorrect: "❌ Charger sans tri = désorganisation et risque de délaisser les plus graves. Évacuer les VERT d'abord = erreur stratégique — les hôpitaux sont alertés pour les ROUGE, pas les VERT.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: null,
+          multiSelect: true,
+          text: "L'hôpital récepteur vous contacte avant l'arrivée du premier ROUGE. Quels éléments DEVEZ-VOUS transmettre ? (plusieurs réponses possibles)",
+          choices: [
+            { text: "ETA estimé (temps de transport restant jusqu'à l'hôpital)", correct: true },
+            { text: "Nombre de patients par catégorie triage attendus (ROUGE / JAUNE / VERT)", correct: true },
+            { text: "Mécanisme principal et types de lésions dominantes (explosion, CO, trauma, brûlures)", correct: true },
+            { text: "Uniquement le nombre total — les détails s'évaluent à l'arrivée du patient", correct: false },
+            { text: "Ne rien transmettre — la transmission hôpital est exclusivement du ressort du médecin SMUR", correct: false }
+          ],
+          feedback: {
+            correct: "Parfait. La pré-alerte hospitalière (ETA + triage + mécanisme) permet d'activer : salle de déchocage, chirurgien, brûlologue, caisson hyperbare. Sans cette info, l'accueil est réactif au lieu d'être proactif.",
+            incorrect: "Insuffisant. L'IAS3 en transfert transmet toujours l'ETA, le bilan triage et le mécanisme. Ce n'est pas réservé au SMUR. Le délai de préparation hospitalière coûte des vies.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: null,
+          text: "Le plan hospitalier est saturé : tous les ROUGE sont dirigés vers l'HUG uniquement. Le responsable PMA décide d'envoyer un ROUGE vers l'hôpital de campagne (distance supérieure). Que pensez-vous de cette décision ?",
+          choices: [
+            { text: "Décision du médecin responsable PMA à respecter. L'hôpital de campagne peut être plus adapté sur certains profils. Soutenir la décision et préparer le transport.", correct: true },
+            { text: "Refuser catégoriquement : les ROUGE vont à l'hôpital le plus proche, toujours", correct: false },
+            { text: "Appeler l'HUG vous-même pour contredire la décision du responsable PMA", correct: false }
+          ],
+          feedback: {
+            correct: "✅ En IMV, le médecin responsable PMA coordonne les évacuations selon la capacité hospitalière globale. Surcharger un seul hôpital = mortalité accrue pour tous. La hiérarchie de commandement IMV doit être respectée.",
+            incorrect: "❌ La règle 'hôpital le plus proche' s'applique en intervention normale. En IMV avec plan hospitalier activé, c'est la régulation globale qui décide. Contredire le responsable PMA crée une confusion de commandement.",
+            naca: null
+          }
+        },
+        {
+          phase: "pma",
+          patient: null,
+          text: "Rapport d'intervention : vous devez documenter une décision de triage NOIR sur une victime qui avait encore un pouls faible lors du triage. Comment formulez-vous cela ?",
+          choices: [
+            { text: "Documenter factuellement : heure, pouls estimé, FR, état de conscience, ressources disponibles à l'instant, classification IMV selon protocole START, décision collégiale si possible", correct: true },
+            { text: "Ne pas documenter la décision NOIR — risque légal pour l'équipe", correct: false },
+            { text: "Indiquer que la victime était déjà décédée à l'arrivée", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La documentation factuelle et honnête des décisions difficiles est une obligation éthique et légale. Le protocole IMV (START) justifie la décision. La traçabilité honnête protège légalement l'équipe.",
+            incorrect: "❌ Ne pas documenter ou falsifier un document médical est une faute grave. La documentation honnête protège l'équipe juridiquement en démontrant que la décision était basée sur un protocole reconnu.",
+            naca: null
+          }
+        }
+      ]
+    }
+
+    // Les 10 autres scénarios catastrophe seraient CAT-03 à CAT-12
+    // Pour cette version, les cas sont randomisés parmi les disponibles
+
+  ];
+
+</script>
+
+<!-- ═══ MOTEUR PRINCIPAL ═══ -->
+<script>
+// SECUR-QUIZ | Base de données locale — 20 cas cliniques
+// Protocoles : SRC, ABCDE, START, PICA/BSC Genève, NACA
+// Mode IAS3 : 8 cas (5 questions) | Mode Catastrophe : 12 cas (15 questions)
+
+const SECUR_CASES = {
+
+  ias3: [
 
     // ────────────────────────────────────────────────────────────────
     // CAS IAS3-01 : Douleur thoracique — SCA
@@ -1942,24 +3137,13 @@ const IAS3_CASES = [
       ]
     }
 
-  ];
+  ], // end ias3
 
+  // ════════════════════════════════════════════════════════════════
+  //  SCÉNARIOS CATASTROPHE (12 cas — 15 questions chacun)
+  // ════════════════════════════════════════════════════════════════
 
-// ═══════════════════════════════════════════════════════════════
-// SECUR-QUIZ | Données Catastrophe / IMV
-// Protocoles : START, METHANE, TRACER, PMA, ORCA Canton
-// Format : chaque cas = { id, title, situation:{}, questions[] }
-// ─────────────────────────────────────────────────────────────
-// AJOUT D'UN CAS :
-//   1. Copier un bloc existant (CAT-01 ou CAT-02)
-//   2. Incrémenter l'id : CAT-03, CAT-04, etc.
-//   3. Chaque cas a 15 questions (12 normales + 3 EVASAN en fin)
-//   4. Pour les questions à choix multiples : ajouter multiSelect:true
-//      et définir plusieurs choices avec correct:true
-//   5. Sauvegarder — le moteur charge les cas aléatoirement
-// ═══════════════════════════════════════════════════════════════
-
-const CAT_CASES = [
+  catastrophe: [
 
     // ────────────────────────────────────────────────────────────────
     // CAT-01 : Accident de car scolaire — Route du Grand-Saint-Bernard
@@ -2468,21 +3652,13 @@ const CAT_CASES = [
     // Les 10 autres scénarios catastrophe seraient CAT-03 à CAT-12
     // Pour cette version, les cas sont randomisés parmi les disponibles
 
-  ];
+  ] // end catastrophe
 
+}; // end SECUR_CASES
 
-
-
-// ═══════════════════════════════════════════════════════════════
-// SECUR-QUIZ | Moteur principal
-// Données : data-ias3.js + data-catastrophe.js (chargés avant)
-// ═══════════════════════════════════════════════════════════════
-
-// Assemble depuis les fichiers de données
-const SECUR_CASES = {
-  ias3: IAS3_CASES,
-  catastrophe: CAT_CASES
-};
+// ═══════════════════════════════════════════════════════════════════
+// Domaines pédagogiques et mots-clés pour l'analyse intelligente
+// ═══════════════════════════════════════════════════════════════════
 
 const PEDAGOGIC_KEYWORDS = {
   "Algorithme START et triage IMV": ["start", "triage", "rouge", "jaune", "vert", "noir", "imv", "victime"],
@@ -2499,9 +3675,6 @@ const PEDAGOGIC_KEYWORDS = {
   "Protocoles traumatologie et immobilisation": ["collier", "matelas coquille", "rachis", "polytraumatisme"],
   "Gestion psychologique des victimes et collègues": ["psychologique", "cist", "débriefing", "stress", "ptsd"]
 };
-
-
-
 
 /* ─────────────────────────────────────────────────────────────────
    THEME
@@ -2537,8 +3710,6 @@ updateClock();
 ───────────────────────────────────────────────────────────────── */
 const state = {
   mode: null,
-  userName: '',
-  sessionDate: null,
   currentCase: null,
   questionIndex: 0,
   questions: [],
@@ -2550,18 +3721,6 @@ const state = {
   caseFirstMonitorDone: false, // first monitor of current IAS3 case done?
   animFrames: []
 };
-
-/* ─────────────────────────────────────────────────────────────────
-   HEADER BADGE
-───────────────────────────────────────────────────────────────── */
-function updateHeaderBadge(){
-  const el = document.getElementById('header-quiz-badge-text');
-  if(!el) return;
-  const mode = state.mode === 'ias3' ? 'IAS 3' : 'CAT';
-  const qi = state.questionIndex + 1;
-  const total = state.questions.length;
-  el.textContent = `${mode} · Q${qi}/${total}`;
-}
 
 /* ─────────────────────────────────────────────────────────────────
    VIEWS
@@ -2577,52 +3736,12 @@ function showView(id){
   t.classList.remove('hidden');
   requestAnimationFrame(()=> t.classList.add('fade-in'));
   window.scrollTo(0,0);
-  // Show / hide the back-to-home button
-  const homeBtn = document.getElementById('btn-home');
-  if(homeBtn) homeBtn.classList.toggle('hidden', id === 'view-intro');
-  // Show/hide header quiz badge
-  const hqBadge = document.getElementById('header-quiz-badge');
-  if(hqBadge) hqBadge.classList.toggle('hidden', id !== 'view-quiz' && id !== 'view-feedback');
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   RETOUR ACCUEIL
-───────────────────────────────────────────────────────────────── */
-function goHome(){
-  const inProgress = state.questions && state.questions.length > 0
-    && state.questionIndex < state.questions.length
-    && state.questionIndex > 0;
-  if(inProgress){
-    if(!confirm('Abandonner la simulation en cours et retourner à l\'accueil ?')) return;
-  }
-  state.animFrames.forEach(id => cancelAnimationFrame(id));
-  state.animFrames = [];
-  state.questions = [];
-  state.questionIndex = 0;
-  state.score = 0;
-  state.errors = [];
-  state.mode = null;
-  state.monitorDone = false;
-  state.monitorVisible = false;
-  state.caseFirstMonitorDone = false;
-  state.seenPatients = [];
-  showView('view-intro');
-  // Restore name in input (preserve userName)
-  setTimeout(()=>{
-    const ni = document.getElementById('user-name-input');
-    if(ni){ ni.value = state.userName; ni.focus(); }
-  }, 100);
 }
 
 /* ─────────────────────────────────────────────────────────────────
    SESSION START
 ───────────────────────────────────────────────────────────────── */
 function startSession(mode){
-  // Save player name
-  const nameInput = document.getElementById('user-name-input');
-  const rawName = nameInput ? nameInput.value.trim() : '';
-  state.userName = rawName || 'Participant';
-  state.sessionDate = new Date().toLocaleString('fr-CH');
   state.mode = mode;
   state.questionIndex = 0;
   state.score = 0;
@@ -2656,7 +3775,6 @@ function populateSituation(c){
 function beginQuiz(){
   renderQuestion();
   showView('view-quiz');
-  updateHeaderBadge();
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -2673,7 +3791,7 @@ function renderQuestion(){
   const pct = (state.questionIndex / total * 100).toFixed(0);
   document.getElementById('quiz-progress-label').textContent = `Q ${state.questionIndex+1}/${total}`;
   document.getElementById('quiz-progress-fill').style.width = pct + '%';
-  document.getElementById('quiz-score-live').textContent = `${state.score} pts`;
+  document.getElementById('quiz-score-live').textContent = `${state.score}/${state.questionIndex}`;
 
   // Phase badge
   const badge = document.getElementById('quiz-phase-badge');
@@ -2803,9 +3921,8 @@ function buildChoices(q, locked){
   const container = document.getElementById('choices-container');
   container.innerHTML = '';
 
-  // Shuffle choices for catastrophe mode
-  const isCAT = state.mode === 'catastrophe';
-  const choices = isCAT ? shuffleArray(q.choices) : q.choices;
+  // Shuffle choices for all modes (IAS3 + catastrophe)
+  const choices = shuffleArray(q.choices);
   const letters = ['A','B','C','D','E'];
 
   if(q.multiSelect){
@@ -3544,39 +4661,16 @@ function showResults(){
   // Title
   let title, sub;
   if(pct >= 0.9){
-    title = 'Excellent'; sub = 'Protocoles suisses parfaitement maîtrisés';
+    title = 'Excellente maîtrise'; sub = 'Protocoles suisses parfaitement intégrés';
   } else if(pct >= 0.7){
-    title = 'Bien'; sub = 'Quelques points de protocole à consolider';
+    title = 'Bon niveau global'; sub = 'Quelques points de protocole à consolider';
   } else if(pct >= 0.5){
-    title = 'Moyen'; sub = 'Révision recommandée des domaines indiqués';
+    title = 'Niveau intermédiaire'; sub = 'Révision ciblée des domaines indiqués';
   } else {
-    title = 'Insuffisant'; sub = 'Formation complémentaire conseillée — consulter les protocoles SRC et BSC Genève';
+    title = 'Formation requise'; sub = 'Consulter impérativement les protocoles SRC et BSC Genève';
   }
   document.getElementById('results-title').textContent = title;
   document.getElementById('results-sub').textContent = sub;
-
-  // Display player greeting
-  const pctRounded = Math.round(pct * 100);
-  const name = state.userName || 'Participant';
-  const greeting = pct >= 0.7 ? `Bien joué, ${name} !` : `Résultats — ${name}`;
-  const greetEl = document.getElementById('results-greeting');
-  if(greetEl) greetEl.textContent = greeting;
-
-  // Score percentage (two elements)
-  const pctEl = document.getElementById('results-pct');
-  if(pctEl) pctEl.textContent = pctRounded + '%';
-  const pct2El = document.getElementById('results-pct2');
-  if(pct2El) pct2El.textContent = pctRounded + '%';
-
-  // Mode badge + date
-  const modeEl = document.getElementById('results-mode-badge');
-  if(modeEl) modeEl.textContent = state.mode === 'ias3' ? 'IAS 3' : 'Catastrophe / IMV';
-  const dateEl = document.getElementById('results-date');
-  if(dateEl) dateEl.textContent = state.sessionDate || '';
-
-  // Stat cells
-  const totalEl = document.getElementById('stat-total');
-  if(totalEl) totalEl.textContent = total;
 
   // Pedagogic analysis
   const pedList = document.getElementById('pedagogic-list');
@@ -3661,10 +4755,6 @@ function restart(){
   state.animFrames.forEach(id => cancelAnimationFrame(id));
   state.animFrames = [];
   showView('view-intro');
-  setTimeout(()=>{
-    const ni = document.getElementById('user-name-input');
-    if(ni){ ni.value = state.userName !== 'Participant' ? state.userName : ''; ni.focus(); }
-  }, 100);
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -3688,10 +4778,7 @@ window.addEventListener('resize', ()=>{
     }
   }, 150);
 });
-
-
-
-
 </script>
+
 </body>
 </html>
