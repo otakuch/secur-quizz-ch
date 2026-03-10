@@ -518,7 +518,508 @@ const CAT_CASES = [
       ]
     }
 
-    // Les 10 autres scénarios catastrophe seraient CAT-03 à CAT-12
-    // Pour cette version, les cas sont randomisés parmi les disponibles
+    ,
+    {
+      id: "CAT-03",
+      title: "Mouvement de foule — Paléo Festival, Nyon",
+      category: "catastrophe",
+      difficulty: "hard",
+      location: "Nyon, Canton de Vaud (VD) — frontalier Haute-Savoie (F)",
+      scenario: `Samedi soir, 23h15. La scène principale du Paléo Festival de Nyon (VD) vient d'accueillir 50 000 spectateurs pour le concert de clôture. À la sortie, une bousculade éclate dans le goulet d'étranglement de la porte Nord (passage de 4 m de large pour 12 000 personnes). Des cris, des chutes en cascade, des personnes piétinées et comprimées contre les barrières métalliques. Votre équipe SMUR 144 Vaud est la première à arriver sur les lieux, 8 minutes après l'appel. La Centrale CECAL 144 signale plusieurs dizaines de victimes au sol. La gendarmerie vaudoise (117) et les sapeurs-pompiers de Nyon (118) sont en route. Des spectateurs français (Haute-Savoie) font partie des victimes — la frontière est à 5 km.`,
+      questions: [
+        {
+          id: "CAT-03-Q01",
+          phase: 'ambulance',
+          patient: null,
+          text: "Vous êtes le premier équipier SMUR sur zone. Quelle est votre PREMIÈRE action avant toute prise en charge de victime ?",
+          choices: [
+            { text: "Sécuriser votre propre équipe, évaluer les dangers (foule encore en mouvement, barrières instables, accès véhicules) et baliser un périmètre de sécurité avant toute action médicale", correct: true },
+            { text: "Commencer immédiatement le triage START sur les victimes les plus proches", correct: false },
+            { text: "Contacter la famille des victimes visibles", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La règle d'or : ne pas faire de nouvelle victime. En IMV mouvement de foule, la foule résiduelle, les barrières et les accès représentent des dangers actifs. L'équipe SMUR ne s'engage qu'après sécurisation minimale du périmètre.",
+            incorrect: "❌ Engager une équipe SMUR sans sécurisation préalable est une faute tactique. En mouvement de foule, la foule peut encore être en mouvement, les barrières instables. Une équipe blessée aggrave le bilan.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q02",
+          phase: 'ambulance',
+          patient: null,
+          text: "Vous activez le message METHANE. Que signifie chaque lettre dans ce contexte ?",
+          choices: [
+            { text: "M=Major incident (IMV confirmé), E=Exact location (Paléo Festival Porte Nord, Nyon VD), T=Type of incident (mouvement de foule, piétinement), H=Hazards (foule, barrières, nuit), A=Access (route de St-Cergue, côté scène Nord), N=Number of casualties (estimé 25-35), E=Emergency services (SMUR, police, pompiers)", correct: true },
+            { text: "M=Médical, E=Équipe, T=Triage, H=Hôpital, A=Alerte, N=Nombre, E=Évacuation", correct: false },
+            { text: "METHANE est un protocole français non utilisé en Suisse romande", correct: false }
+          ],
+          feedback: {
+            correct: "✅ METHANE est le standard international de compte-rendu d'incident majeur, utilisé en Suisse romande et en coordination transfrontalière avec la France. Il permet à la Centrale 144 de dimensionner la réponse.",
+            incorrect: "❌ METHANE (Major incident / Exact location / Type / Hazards / Access / Number / Emergency services) est utilisé en Suisse romande. C'est le format attendu par la Centrale CECAL 144 pour déclencher les ressources complémentaires.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q03",
+          phase: 'ambulance',
+          patient: null,
+          text: "Combien de zones de sécurité définissez-vous et quelle est leur logique sur ce site festivalier ?",
+          choices: [
+            { text: "Zone rouge (chaud) = zone de triage immédiat au pied des barrières ; zone orange (tiède) = PMA à 50 m en espace dégagé ; zone verte (froide) = PRV parking Est pour victimes autonomes et familles", correct: true },
+            { text: "Une seule zone de triage centralisée pour maintenir la cohésion des équipes", correct: false },
+            { text: "Deux zones : urgence et non-urgence, délimitées par la sécurité du festival", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Les 3 zones (chaude/tiède/froide) sont le standard IMV suisse. En contexte festivalier, la topographie du site impose leur adaptation : espace scénique dégagé pour le PMA, parking pour le PRV, accès pompiers réservé côté Est.",
+            incorrect: "❌ Sans zonage strict, les équipes se mélangent, les véhicules bloquent les accès et les victimes valides perturbent les prises en charge critiques. Le tri en 3 zones est impératif.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q04",
+          phase: 'pma',
+          patient: { description: "Femme, 24 ans. Au sol, inconsciente. Ventilation : absente après bascule de tête. Pouls carotidien : absent.", vitals: "FC: 0 — Sat: non mesurable — GCS: 3" },
+          text: "Triage START : quelle est la classification de cette victime et justifiez la décision en contexte IMV ?",
+          choices: [
+            { text: "NOIR (décédée ou survivabilité nulle en contexte IMV) — en IMV, l'absence de ventilation après LVA et l'absence de pouls impose la classification NOIR pour préserver les ressources pour les victimes sauvables", correct: true },
+            { text: "ROUGE — débuter RCP immédiatement", correct: false },
+            { text: "ORANGE — attendre des ressources supplémentaires pour tenter la RCP", correct: false }
+          ],
+          feedback: {
+            correct: "✅ En contexte IMV, la RCP sur un arrêt cardiaque primaire non traumatique sans ressources disponibles est classé NOIR selon START. La RCP mobilise 2 personnes pendant 30 minutes — en IMV avec 30 victimes, c'est inacceptable. L'exception : ACR traumatique direct chez enfant.",
+            incorrect: "❌ En situation normale hors IMV, la RCP serait initiée. En IMV avec ressources limitées, le protocole START classe NOIR tout arrêt cardio-respiratoire sans ventilation spontanée après LVA, afin de sauver le maximum de victimes sauvables.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q05",
+          phase: 'pma',
+          patient: { description: "Homme, 29 ans, agité. Respiration difficile et superficielle. Confusion. TA 85/50 mmHg — FC 140/min — Sat 85% — GCS 13", vitals: "TA: 85/50 — FC: 140 — Sat: 85% — GCS: 13" },
+          text: "Triage START : quelle classification et quelle action prioritaire ?",
+          choices: [
+            { text: "ROUGE — détresse respiratoire + état de choc (TA<90, FC>120) + Sat 85% + GCS altéré. Libération des voies aériennes, oxygénothérapie haute concentration, pose d'une VVP, transfert PMA immédiat", correct: true },
+            { text: "ORANGE — état stable pour l'instant, surveillance", correct: false },
+            { text: "VERT — victime consciente et marchante", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Critères ROUGE réunis : FR altérée, TA<90, FC>120, Sat<90%, GCS<15. En compression thoracique (crush syndrome), l'hypoxie et le choc sont liés. L'oxygène haute concentration et la VVP sont les premières actions au PMA.",
+            incorrect: "❌ Ne pas sous-estimer une Sat à 85% avec FC à 140 et TA à 85. Ces chiffres signent un état de choc compensé avec détresse respiratoire — classification ROUGE impérative.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q06",
+          phase: 'pma',
+          patient: { description: "Adolescent, 16 ans. Fracture fermée tibiale droite évidente, douleur 8/10, mais marche possible avec aide. Conscient, orienté, respiratoire normal, hémodynamique stable.", vitals: "FC: 95 — Sat: 98% — GCS: 15" },
+          text: "Triage START et orientation : comment gérez-vous cette victime ?",
+          choices: [
+            { text: "JAUNE (retardé) — fracture isolée stable, orientation vers PRV (zone verte) avec immobilisation provisoire et antalgique. Réorientation vers Hôpital de la Tour ou HUG pédiatrie secondairement.", correct: true },
+            { text: "ROUGE — douleur intense, priorité absolue", correct: false },
+            { text: "VERT — victime marchante, pas de prise en charge nécessaire", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Fracture isolée sans critère de gravité = JAUNE. L'immobilisation provisoire (attelle) et l'antalgique suffisent en première intention. Les ressources PMA sont préservées pour les ROUGE. Mineur : contact avec les parents et signalement au Médecin Directeur de l'Intervention.",
+            incorrect: "❌ La douleur seule ne classe pas en ROUGE. Sans instabilité hémodynamique ni atteinte vitale, une fracture isolée est JAUNE. Les ROUGE sont les urgences vitales immédiates.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q07",
+          phase: 'ambulance',
+          patient: null,
+          text: "Coordination transfrontalière : plusieurs victimes sont des ressortissants français de Haute-Savoie. Le SAMU 74 (Annemasse) demande à envoyer des renforts. Quelle est la procédure correcte ?",
+          choices: [
+            { text: "Informer la Centrale CECAL 144 qui active les accords bilatéraux franco-suisses (Accord de Karlsruhe). Le SAMU 74 peut envoyer des SMUR en renfort sous coordination du Médecin Directeur d'Intervention suisse. Les victimes françaises peuvent être redirigées vers l'Hôpital d'Annemasse si saturation des HUG/CHUV.", correct: true },
+            { text: "Refuser les renforts français — les ressources suisses sont suffisantes", correct: false },
+            { text: "Transférer immédiatement toutes les victimes françaises au SAMU 74 sans tri préalable", correct: false }
+          ],
+          feedback: {
+            correct: "✅ L'Accord de Karlsruhe (1996) organise la coopération transfrontalière entre France et Suisse pour les secours. En IMV à Nyon (5 km de la frontière), les SMUR de Haute-Savoie peuvent renforcer sous commandement unifié 144. Les victimes françaises stables peuvent être évacuées vers Annemasse/Annecy pour désaturer les hôpitaux vaudois.",
+            incorrect: "❌ En IMV transfrontalier, le refus des renforts ou le transfert non coordonné sont des erreurs graves. L'Accord de Karlsruhe prévoit exactement ce type de coopération — la Centrale 144 est le point de coordination.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q08",
+          phase: 'ambulance',
+          patient: null,
+          text: "Vous devez établir un PMA (Poste Médical Avancé). Quels sont les critères de positionnement idéal dans ce contexte festivalier ?",
+          choices: [
+            { text: "Zone sécurisée hors couloir d'évacuation foule, accessible ambulances (≥2 voies entrée/sortie), à couvert si possible (tente festival disponible), éclairage suffisant, espace pour triage/traitement/évacuation séparés, loin des médias", correct: true },
+            { text: "Le plus proche possible des victimes pour réduire les temps de transport", correct: false },
+            { text: "Dans le poste de sécurité du festival déjà équipé", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Le PMA doit être accessible, sécurisé, spacieux et organisé en flux unidirectionnel (arrivée triage → traitement → évacuation). En festival, les tentes VIP ou espaces logistiques offrent souvent des infrastructures adaptables. L'éloignement des médias protège les victimes.",
+            incorrect: "❌ Un PMA trop proche de la zone chaude est dangereux. Un PMA dans le poste de sécurité est trop petit et nuit à la gestion du site. Le PMA doit être en zone tiède, accessible ambulances.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q09",
+          phase: 'pma',
+          patient: { description: "Femme, 45 ans. Compression thoracique prolongée (~15 min). Douleur thoracique bilatérale, dyspnée, hémoptysie. TA 100/70 — FC 115 — Sat 91% — GCS 15", vitals: "TA: 100/70 — FC: 115 — Sat: 91% — GCS: 15" },
+          text: "Vous suspectez un syndrome de compression thoracique (traumatisme de Perthes). Quelle est votre prise en charge au PMA ?",
+          choices: [
+            { text: "O2 haute concentration (15L/min), position demi-assise, deux VVP, analgésie IV titrée (morphine), surveillance Sat/FC/TA continue, ECG 12 dérivations, transport médicalisé SMUR vers centre de traumatologie (HUG ou CHUV), alerte préalable du service receveur", correct: true },
+            { text: "Antalgiques per os et retour à domicile si amélioration", correct: false },
+            { text: "Intubation orotrachéale immédiate sur le terrain", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Le syndrome de Perthes (compression thoracique prolongée) associe contusions pulmonaires, risque de pneumothorax et choc. O2 + demi-assise + analgésie IV + transport médicalisé sont les piliers. L'alerte préalable au centre receveur est impérative en IMV.",
+            incorrect: "❌ Le syndrome de compression thoracique est potentiellement grave avec risque évolutif rapide. Les antalgiques seuls sont insuffisants. L'IOT d'emblée sans détresse respiratoire franche est disproportionnée et dangereuse sur le terrain.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q10",
+          phase: 'ambulance',
+          patient: null,
+          text: "Gestion des familles et des témoins : plusieurs centaines de personnes cherchent leurs proches sur zone. Que mettez-vous en place ?",
+          choices: [
+            { text: "Point Regroupement Victimes (PRV) éloigné de la zone de soins avec personnel dédié (CRS/protection civile), liste nominative tenue à jour, coordination avec la police (117) pour identification, cellule psychologique (UMSPC) activée, numéro d'information famille communiqué via haut-parleurs du festival", correct: true },
+            { text: "Laisser les familles accéder librement à la zone de triage pour identifier leurs proches", correct: false },
+            { text: "Ne pas gérer les familles — c'est le rôle de la sécurité privée du festival", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Le PRV est une composante essentielle de la gestion IMV. En Suisse, la Protection Civile et la Croix-Rouge Suisse (CRS) appuient la gestion des victimes non blessées. L'UMSPC (Unité Mobile de Soutien Psychologique Cantonal) intervient pour les témoins traumatisés et les familles.",
+            incorrect: "❌ Les familles non encadrées entrent dans la zone de soins, gênent les équipes et peuvent être traumatisées. La gestion des familles est une responsabilité médicale et sécuritaire intégrée au dispositif IMV.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q11",
+          phase: 'pma',
+          patient: { description: "Homme, 67 ans. Piétinement. Douleur dorsale intense, paresthésies membres inférieurs, absence de motricité des jambes. TA 130/80 — FC 88 — Sat 97% — GCS 15", vitals: "TA: 130/80 — FC: 88 — Sat: 97% — GCS: 15" },
+          text: "Vous suspectez un traumatisme du rachis avec signe neurologique. Comment procédez-vous au triage et à la prise en charge ?",
+          choices: [
+            { text: "Classification ROUGE — signes neurologiques déficitaires. Immobilisation rachidienne stricte (collier cervical + matelas coquille), manœuvres de déplacement à 4 mains minimum, transport SMUR vers centre neurochirurgical (CHUV Lausanne ou HUG Genève) avec alerte préalable", correct: true },
+            { text: "Classification JAUNE — victime consciente et hémodynamique stable", correct: false },
+            { text: "Mobilisation rapide sans immobilisation pour libérer la place au PMA", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Tout déficit neurologique sous-lésionnel (paraplégie) en traumatisme rachidien = ROUGE et immobilisation stricte. En IMV, même sous pression, le rachis ne se mobilise pas sans protection. Transport médicalisé vers neurochirurgie impératif.",
+            incorrect: "❌ La mobilisation sans immobilisation rachidienne peut transformer une lésion incomplète en lésion complète définitive. Les signes neurologiques déficitaires classent en ROUGE malgré une hémodynamique stable.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q12",
+          phase: 'ambulance',
+          patient: null,
+          text: "Régulation médicale : la Centrale CECAL 144 vous demande le bilan de situation après 30 minutes. Quel format utilisez-vous ?",
+          choices: [
+            { text: "Bilan IMV standardisé : nombre total victimes triées (ROUGE/JAUNE/VERT/NOIR), ressources engagées sur place, PMA opérationnel (oui/non), évacuations en cours (nombre/destination), besoins supplémentaires (sang, SMUR, hélicoptère Rega), estimation heure de fin d'intervention", correct: true },
+            { text: "Rapport verbal libre sans structure particulière", correct: false },
+            { text: "Attendre la fin de l'intervention pour faire un bilan global", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Le bilan intermédiaire structuré toutes les 20-30 minutes est obligatoire en IMV. Il permet à la Centrale 144 de moduler les ressources, de pré-alerter les hôpitaux et d'organiser les EVASAN héliportées (Rega Base de Lausanne ou Genève).",
+            incorrect: "❌ Sans bilan structuré régulier, la Centrale 144 ne peut pas anticiper les besoins. Le bilan verbal libre perd des informations critiques. Attendre la fin est inacceptable — la régulation se fait en temps réel.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q13",
+          phase: 'ambulance',
+          patient: null,
+          text: "EVASAN héliportée : la Rega envoie deux hélicoptères. Quelles sont vos responsabilités pour sécuriser l'hélitreuillage ou l'atterrissage ?",
+          choices: [
+            { text: "Désigner une zone LZ (Landing Zone) dégagée (min. 30×30 m), balisée avec feux de balisage ou torches, libre de câbles aériens et obstacles, communiquer les coordonnées GPS à la Centrale 144, désigner un guide sol, éloigner les curieux à 100 m minimum, couper les éclairages fixes dirigés vers la LZ", correct: true },
+            { text: "Laisser les pilotes Rega choisir leur zone d'atterrissage seuls", correct: false },
+            { text: "Utiliser le parking central du festival éclairé — plus simple pour les hélicoptères", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La sécurisation de la LZ est une responsabilité de l'équipe sol. Les pilotes Rega coordonnent avec la Centrale mais les équipes terrestres balisent et sécurisent. Le parking éclairé peut être utilisé si dégagé de câbles et d'obstacles verticaux.",
+            incorrect: "❌ Un atterrissage non préparé en milieu festivalier (câbles, structures scéniques, foule) est extrêmement dangereux. La LZ doit être préparée par les équipes sol avant l'arrivée des hélicoptères.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q14",
+          phase: 'ambulance',
+          patient: null,
+          text: "Répartition hospitalière : vous avez 8 victimes ROUGE à évacuer. Les HUG (Genève) signalent être en tension. Quelle est votre stratégie de répartition ?",
+          choices: [
+            { text: "Contactez la Centrale CECAL 144 qui coordonne avec les hôpitaux de la région : CHUV Lausanne, Hôpital de la Tour (Meyrin), EHC Morges, et si accord transfrontalier activé : Centre Hospitalier Annecy-Genevois (CHANGE). Répartir selon capacité déclarée et spécialité requise (neurochirurgie, thoracique, trauma).", correct: true },
+            { text: "Envoyer toutes les victimes au centre le plus proche — Hôpital de Nyon — par défaut", correct: false },
+            { text: "Attendre l'accord de chaque service avant d'évacuer", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La régulation médicale multi-sites est le rôle de la Centrale CECAL 144. En tension hospitalière, la répartition géographique sur plusieurs établissements (CHUV, Hôpital de la Tour, EHC Morges, CHANGE Annecy si accord transfrontalier) est la solution. L'hôpital de Nyon n'a pas de plateau technique pour les ROUGE complexes.",
+            incorrect: "❌ Saturer un seul hôpital déjà en tension aggrave la situation. L'hôpital de Nyon n'a pas les ressources pour 8 polytraumatisés. Attendre les accords avant évacuation retarde des soins vitaux.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-03-Q15",
+          phase: 'ambulance',
+          patient: null,
+          text: "Débriefing post-intervention : 2 heures après, l'intervention est levée. Bilan : 2 décès (NOIR), 6 ROUGE évacués, 11 JAUNE traités, 14 VERT pris en charge. Quelle est la priorité immédiate pour votre équipe ?",
+          choices: [
+            { text: "Débriefing opérationnel immédiat (hot debrief) : reconstitution chronologique, identification des points critiques, soutien émotionnel de l'équipe, activation de l'UMSPC si besoin, transmission du rapport d'intervention à la Centrale 144 et documentation des décisions de triage NOIR", correct: true },
+            { text: "Retourner immédiatement en service normal sans débriefing — l'équipe est rodée", correct: false },
+            { text: "Signaler uniquement les décès aux autorités et oublier le reste", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Le débriefing post-IMV (hot debrief dans les 2h, cold debrief sous 72h) est obligatoire en médecine de catastrophe suisse. Il combine analyse opérationnelle et soutien psychologique. La documentation des décisions de triage NOIR a une valeur médico-légale. L'UMSPC est disponible pour les équipes.",
+            incorrect: "❌ Les interventions IMV avec décès génèrent un stress aigu dans les équipes. L'absence de débriefing favorise le syndrome de stress post-traumatique. La documentation des décisions protège légalement les intervenants.",
+            naca: null
+          }
+        }
+      ]
+    }
+    ,
+    {
+      id: "CAT-04",
+      title: "Évacuation hospitalière — HUG Genève (REA/USC/MCO/Néonat)",
+      category: "catastrophe",
+      difficulty: "expert",
+      location: "Hôpitaux Universitaires de Genève (HUG), Canton de Genève (GE)",
+      scenario: `Lundi matin, 06h45. Un incendie se déclare dans le local technique du sous-sol du bâtiment A des HUG (Hôpitaux Universitaires de Genève). La fumée envahit les circuits de ventilation. Le plan PEGASE (Plan d'Évacuation Générale et de Sécurité des HUG) est déclenché par le Directeur Médical de Piquet. 100 patients sont identifiés comme prioritaires à évacuer : REA adulte (P1 intubés sous amines), USC/USIC (P2 semi-critiques), Néonatologie (P1-P2 prématurés en incubateur), et MCO (P3-P4). Les SIS Genève (118) sont sur place. La Centrale 144 coordonne la répartition vers CHUV Lausanne, Hôpital Riviera-Chablais, Hôpital de la Tour et HFR Fribourg.`,
+      questions: [
+        {
+          id: "CAT-04-Q01",
+          phase: 'ambulance',
+          patient: null,
+          text: "Le plan PEGASE est déclenché. Qui prend le commandement médical de l'évacuation et quelles sont ses premières actions ?",
+          choices: [
+            { text: "Le Médecin Chef de Piquet (MCP) HUG prend le commandement médical, en coordination avec le Directeur des Soins et les SIS Genève. Premières actions : activer la cellule de crise HUG, inventaire des patients par catégorie de priorité (P1/P2/P3/P4), mobilisation des renforts internes (médecins, infirmiers des étages non sinistrés), contact Centrale 144 pour répartition inter-hospitalière.", correct: true },
+            { text: "Le chef des pompiers (SIS) prend le commandement médical de l'évacuation", correct: false },
+            { text: "Chaque chef de service gère l'évacuation de son unité de façon autonome", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Le plan PEGASE des HUG désigne clairement un commandement médical unifié. La coordination médicale-sécurité incendie (SIS) est assurée par une cellule de crise conjointe. Sans coordination centrale, les ressources de transport (ambulances, SMUR) sont mal allouées et les patients P1 peuvent être évacués après des P3.",
+            incorrect: "❌ Le commandement incendie (SIS) gère la sécurité du bâtiment, pas les priorités médicales. La gestion autonome par service crée des conflits de ressources — plusieurs services peuvent réclamer simultanément les mêmes ambulances médicalisées.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q02",
+          phase: 'pma',
+          patient: { description: "REA unité 1 — Homme, 54 ans. Choc septique, sédaté, intubé-ventilé sous noradrénaline 0,8 mcg/kg/min + dobutamine 5 mcg/kg/min. GCS sous sédation 3T. Deux VVC. CVVH en cours.", vitals: "FC: 102 — TA: 88/55 sous amines — Sat: 96% sous VM" },
+          text: "Ce patient REA P1 doit être évacué. Quelle est la condition minimale pour un transport sécurisé ?",
+          choices: [
+            { text: "SMUR médicalisé obligatoire : médecin + infirmier IARI, ventilateur de transport avec batterie ≥4h, pousse-seringues portables (amines, sédation), scope de transport, O2 portable, arrêt temporaire CVVH avec rinçage circuit. Destination : centre REA de niveau identique (CHUV ou HFR Fribourg).", correct: true },
+            { text: "Ambulance de base avec infirmier — le patient est stable sous traitement", correct: false },
+            { text: "Reporter l'évacuation — ce patient est trop instable pour être transporté", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Un patient sous double amine + VM invasive = transport médicalisé SMUR obligatoire. La CVVH est interrompue pour le transport (rinçage anticoagulant du circuit). Le ventilateur de transport doit reproduire les mêmes paramètres. La destination doit avoir une REA de niveau équivalent avec place disponible confirmée.",
+            incorrect: "❌ Ce patient est instable — toute interruption des amines ou de la ventilation peut être fatale en minutes. L'ambulance non médicalisée n'a pas les équipements nécessaires. Reporter l'évacuation n'est pas une option face à la fumée.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q03",
+          phase: 'pma',
+          patient: { description: "REA Néonatologie — Préma 26 SA, 850g. Ventilation haute fréquence oscillatoire (VHFO) + oxyde nitrique (NO) inhalé. Sédaté, instable. Infection KTC. Temperature incubateur 36.8°C.", vitals: "FC: 168 — Sat: 89% sous VHFO+NO — T°: 36.8°C" },
+          text: "Ce prématuré P1 de 850g sous VHFO et NO est le patient le plus complexe à évacuer. Quelle est votre stratégie ?",
+          choices: [
+            { text: "Évacuation en dernière priorité P1 néonatal avec équipe spécialisée (néonatologiste + infirmier néonatal expérimenté) : incubateur de transport chauffant, VHFO portable ou switch vers ventilation conventionnelle si VHFO portable indisponible, NO portable si disponible sinon FiO2 compensatoire temporaire, transport vers NICU de niveau III (CHUV Lausanne ou HU Bern en accord intercantonal). Briefing équipe recevante au préalable.", correct: true },
+            { text: "Évacuer immédiatement sans attendre l'équipe néonatale spécialisée — la fumée est prioritaire", correct: false },
+            { text: "Maintenir le prématuré en place et sécuriser l'alimentation électrique de l'incubateur", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Le transport d'un prématuré extrême sous VHFO+NO est une des situations les plus critiques en néonatologie d'urgence. L'équipe doit être spécialisée, le matériel de transport adapté. Si le NO portable est indisponible, une oxygénothérapie à haute FiO2 est une mesure temporaire de quelques minutes. Le CHUV est le centre de référence NICU de niveau III en Suisse romande.",
+            incorrect: "❌ Évacuer sans équipe spécialisée un prématuré instable sous VHFO risque une décompensation rapide. Maintenir sur place n'est possible que si la zone est réellement sécurisée — avec de la fumée dans les circuits de ventilation, aucune zone n'est sûre.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q04",
+          phase: 'pma',
+          patient: { description: "USC — Femme, 72 ans. Insuffisance cardiaque décompensée sous dobutamine 5 mcg/kg/min. Consciente, orientée. VNI nocturne terminée. O2 lunettes 3L/min. Edèmes membres inférieurs.", vitals: "FC: 88 — TA: 105/65 — Sat: 94% sous O2 3L/min" },
+          text: "Catégorie P2. Quel vecteur de transport et quelle destination pour ce patient USC ?",
+          choices: [
+            { text: "Ambulance médicalisée (IAS3/infirmier IARI) avec scope, pousse-seringue dobutamine portable, O2 portable. Destination : service cardiologie d'un hôpital receveur confirmé par la Centrale 144 (Hôpital de la Tour, Hôpital Riviera-Chablais, ou HFR Fribourg selon disponibilité).", correct: true },
+            { text: "Transport en véhicule sanitaire léger (VSL) — patient conscient et marchant", correct: false },
+            { text: "Garder en USC avec monitoring fixe pendant que les P1 sont évacués", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Patient P2 sous amine = transport paramédical minimum avec monitoring et pousse-seringue portable. Le VSL est insuffisant. La garde en USC n'est acceptable que si la zone est réellement hors danger, ce qui n'est pas le cas avec fumée dans les circuits de ventilation.",
+            incorrect: "❌ Un patient sous dobutamine ne peut pas être transporté en VSL sans monitoring ni continuité des amines. La conscience du patient ne détermine pas le niveau de transport — c'est la dépendance aux traitements qui compte.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q05",
+          phase: 'ambulance',
+          patient: null,
+          text: "Priorisation globale : vous avez 8 patients REA P1 (dont 3 sous VHFO néonat), 6 patients USC P2 sous amines, 15 patients USIC/USINV P2, et 71 patients MCO P3-P4. Vous disposez de 3 SMUR, 8 ambulances IAS3, et 4 VSL. Par où commencez-vous ?",
+          choices: [
+            { text: "Phase 1 (simultanée) : 3 SMUR pour les 3 patients REA adulte les plus instables + coordination néonat avec équipe spécialisée pour les 3 prématurés P1. Phase 2 : 8 ambulances IAS3 pour USC/USIC P2 sous amines. Phase 3 : 4 VSL pour P3-P4 autonomes. En parallèle : Protection Civile et renforts CRS pour P3-P4 valides.", correct: true },
+            { text: "Commencer par les P3-P4 — ils sont les plus nombreux et libèrent rapidement les lits", correct: false },
+            { text: "Attendre que tous les SMUR soient disponibles avant d'évacuer les P2", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La logique IMV hospitalière est inverse à l'intuition : les P1 partent en premier avec les ressources les plus lourdes, en parallèle avec la préparation des P2. Les P3-P4 peuvent être acheminés vers des zones d'attente sécurisées dans l'hôpital en attendant les VSL. La simultanéité des phases est possible avec coordination cellule de crise.",
+            incorrect: "❌ Commencer par les P3-P4 mobilise les ressources de transport légères sur des patients non critiques pendant que les P1 attendent. Attendre la disponibilité de tous les SMUR retarde dangereusement les P1 les plus instables.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q06",
+          phase: 'pma',
+          patient: { description: "USINV — Homme, 68 ans. AVC ischémique J+1, hémiplégie gauche dense. Conscient, dysphasique. Déglutition à évaluer. Pas d'amines. O2 lunettes 2L/min. SNG en place.", vitals: "FC: 78 — TA: 158/92 — Sat: 96% — GCS: 12" },
+          text: "Patient P2 AVC. Son transport nécessite-t-il un SMUR médicalisé ?",
+          choices: [
+            { text: "Non — ambulance IAS3/infirmier IARI suffisante. Pas d'amines, pas de ventilation mécanique. SNG sécurisée, scope de transport, O2 portable. Transmission orale détaillée à l'équipe recevante avec dossier médical complet. Destination : service neurologie avec unité neuro-vasculaire (CHUV ou HFR).", correct: true },
+            { text: "Oui — SMUR médecin obligatoire pour tout patient neurologique grave", correct: false },
+            { text: "Ce patient peut être transporté en VSL — il est conscient", correct: false }
+          ],
+          feedback: {
+            correct: "✅ AVC avec hémiplégie sans dépendance respiratoire ni amines = transport paramédical (IAS3/IARI) suffisant avec monitoring et dossier complet. Le SMUR est réservé aux P1 intubés instables. Le VSL est insuffisant car le patient nécessite monitoring et peut se dégrader (risque convulsif, déglutition).",
+            incorrect: "❌ Le niveau de transport est basé sur la dépendance technologique, pas sur le diagnostic. Sans ventilation mécanique ni amines, le SMUR médecin n'est pas nécessaire pour ce patient. Un patient dysphasique avec GCS 12 ne peut pas voyager en VSL.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q07",
+          phase: 'pma',
+          patient: { description: "Maternité — Femme, 29 ans. 30 SA. Pyélonéphrite compliquée. Sous antibiotiques IV. Consciente. Monitoring fœtal positif (BCF 140/min stables). Pas de contractions.", vitals: "FC: 98 — TA: 122/78 — T°: 38.6°C — BCF: 140/min" },
+          text: "Patiente enceinte de 30 SA lors de l'évacuation. Quelles précautions spécifiques prenez-vous ?",
+          choices: [
+            { text: "Transport en ambulance IAS3 avec monitoring fœtal portable (CTG portable), décubitus latéral gauche en transport, antibiotiques IV en cours pendant le transport, destination : maternité de niveau IIb minimum avec NICU (CHUV ou HFR Fribourg si accord), informer l'équipe obstétricale recevante de la grossesse à 30 SA + infection active.", correct: true },
+            { text: "Transport VSL en position assise — grossesse non compliquée à terme", correct: false },
+            { text: "Reporter l'évacuation jusqu'à l'accouchement pour éviter le stress du transport", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Une grossesse à 30 SA avec infection compliquée nécessite : monitoring fœtal en continu, décubitus latéral gauche (compression aorto-cave), antibiotiques maintenus, et destination maternité avec NICU adapté si accouchement prématuré. La maternité recevante doit être préalertée.",
+            incorrect: "❌ 30 SA = prématurité potentielle si le stress ou l'infection déclenchent le travail. Le VSL sans monitoring est insuffisant. Reporter l'évacuation avec fumée dans les circuits met en danger la mère et l'enfant.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q08",
+          phase: 'ambulance',
+          patient: null,
+          text: "Gestion documentaire d'urgence : en quittant les HUG, quel document médical MINIMUM doit accompagner chaque patient ?",
+          choices: [
+            { text: "Fiche de transfert d'urgence standardisée : identité + date de naissance, diagnostic principal, niveau de priorité (P1/P2/P3/P4), traitements en cours (dose + heure dernière administration), paramètres vitaux de départ, vecteur de transport, hôpital destination, contact médecin référent HUG", correct: true },
+            { text: "Le dossier médical électronique complet imprimé — toutes les informations en cas de besoin", correct: false },
+            { text: "Aucun document n'est nécessaire en urgence — les soignants transmettent oralement", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La fiche de transfert d'urgence standardisée (format ISBAR adapté) est le minimum légal et clinique. Le dossier complet imprimé prend trop de temps en urgence. La transmission orale seule crée des erreurs médicamenteuses. En Suisse, la continuité des soins est une obligation légale même en urgence.",
+            incorrect: "❌ Imprimer un dossier complet en situation d'évacuation d'urgence est impossible et prend trop de temps. La transmission orale seule est insuffisante — les équipes recevantes reçoivent 20-30 patients en peu de temps et ne peuvent pas mémoriser tous les traitements.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q09",
+          phase: 'ambulance',
+          patient: null,
+          text: "Coordination inter-hospitalière : le CHUV Lausanne confirme 4 places REA adulte, mais signale qu'il ne peut pas recevoir de néonatologie. HFR Fribourg a 2 places REA et 3 NICU. L'Hôpital de la Tour a 6 places médecine. Comment organisez-vous la répartition ?",
+          choices: [
+            { text: "CHUV : 4 patients REA adulte P1 (prioriser les chocs septiques + polytrauma). HFR Fribourg : 2 patients REA adulte P1 + 3 prématurés P1 NICU. Hôpital de la Tour : 6 patients P2 cardiologie/médecine. Reste MCO P3-P4 : Hôpital Riviera-Chablais + structures ambulatoires proches. Coordination via Centrale 144.", correct: true },
+            { text: "Envoyer tous les patients P1 au CHUV — c'est le centre de référence cantonal", correct: false },
+            { text: "Attendre que le CHUV libère des places pour tous les patients critiques avant d'évacuer", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La répartition multi-sites selon les spécialités disponibles est le principe fondamental de la régulation en IMV hospitalier. La Centrale 144 centralise les disponibilités en temps réel. Le CHUV ne peut pas absorber tous les P1 — la répartition géographique protège les capacités de chaque hôpital receveur.",
+            incorrect: "❌ Saturer le CHUV avec tous les P1 dégrade la qualité des soins pour tous. L'HFR Fribourg dispose de NICU de niveau III, idéal pour les prématurés. Attendre des places libres expose les P1 à la fumée.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q10",
+          phase: 'pma',
+          patient: { description: "MCO Pédiatrie — Garçon, 4 ans. Bronchiolite VRS, oxygène lunettes 2L/min. Conscient, pleure. Sat 95% sous O2. Parents présents dans la chambre.", vitals: "FC: 128 — Sat: 95% sous O2 2L/min — FR: 36/min" },
+          text: "Patient pédiatrique P3. Ses parents sont présents et refusent l'évacuation sans lui. Comment gérez-vous cette situation ?",
+          choices: [
+            { text: "Intégrer les parents au transport — leur présence réduit le stress de l'enfant et facilite la coopération. Transport ambulance IAS3 avec O2 portable, parents installés aux côtés de l'enfant. Informer les parents simplement de la destination. Valider les droits parentaux en notant leur présence dans la fiche de transfert.", correct: true },
+            { text: "Séparer l'enfant des parents pour respecter le protocole de transport", correct: false },
+            { text: "Reporter l'évacuation de cet enfant jusqu'à ce que les parents acceptent le protocole", correct: false }
+          ],
+          feedback: {
+            correct: "✅ En pédiatrie d'urgence, la présence des parents est un bénéfice thérapeutique. Les séparer crée un stress supplémentaire inutile. Les parents n'ont pas de droit de blocage en situation d'urgence vitale, mais leur coopération est obtenue par l'information et l'intégration au transport.",
+            incorrect: "❌ Séparer un enfant de ses parents dans une situation d'urgence est psychologiquement traumatisant et cliniquement contre-productif. Reporter l'évacuation n'est pas possible face à la fumée. La présence parentale est encouragée en transport pédiatrique.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q11",
+          phase: 'pma',
+          patient: { description: "REA unité 2 — Homme, 78 ans. État de mal épileptique réfractaire. Sédaté, intubé-ventilé. Midazolam + Propofol en IVSE. Pas d'amines actuellement mais épisodes hypotensifs récents.", vitals: "FC: 88 — TA: 118/72 sous sédation — Sat: 98% sous VM" },
+          text: "Ce patient a eu des épisodes hypotensifs récents mais est actuellement stable. Comment classiez-vous son niveau de transport ?",
+          choices: [
+            { text: "P1 — transport SMUR médecin obligatoire. Les épisodes hypotensifs récents signifient une instabilité potentielle. En cas d'hypotension pendant le transport, le médecin SMUR doit être présent pour initier les amines. La préparation d'un bolus de cristalloïdes et d'éphédrine est impérative.", correct: true },
+            { text: "P2 — actuellement stable, ambulance IAS3 suffisante", correct: false },
+            { text: "Attendre la stabilisation complète avant d'évacuer", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Un patient avec épisodes hypotensifs récents est à risque imminent de décompensation — la stabilité actuelle est fragile. Le transport en SMUR permet d'initier des amines si nécessaire. La règle : en cas de doute sur la stabilité, classer P1. La fumée ne permet pas d'attendre la stabilisation.",
+            incorrect: "❌ 'Actuellement stable' ne signifie pas 'stable pour le transport'. Un état de mal épileptique réfractaire avec hypotensions récentes peut décompenser en 2 minutes pendant le transport sans médecin. L'ambulance IAS3 sans médecin ne peut pas initier les amines.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q12",
+          phase: 'ambulance',
+          patient: null,
+          text: "Fin de vie : un patient MCO bénéficie d'une sédation palliative (PCA morphine, directives anticipées NO-RCP, projet de soins palliatifs établi). Ses proches sont présents. Comment gérez-vous son évacuation ?",
+          choices: [
+            { text: "Évaluation individuelle : si transport réalisable sans aggraver la souffrance, évacuation vers structure de soins palliatifs ou EMS adapté avec maintien de la PCA. Si le transport est inenvisageable (aggravation des souffrances), la décision de maintien sur place dans une zone sécurisée peut être prise collégialement avec les proches et un médecin senior, en documentant la décision.", correct: true },
+            { text: "Évacuer comme tout autre patient — pas de prise en compte du projet de soins palliatifs en urgence", correct: false },
+            { text: "Ne pas évacuer et ne pas intervenir — directives anticipées signifient pas de soins actifs", correct: false }
+          ],
+          feedback: {
+            correct: "✅ Les directives anticipées NO-RCP ne signifient pas abandon des soins de confort. En évacuation d'urgence, le projet de soins palliatifs est maintenu. Si le transport aggrave réellement la souffrance (douleur, dyspnée terminale), une décision collégiale documentée de maintien dans une zone sécurisée est éthiquement défendable et légalement encadrée en Suisse.",
+            incorrect: "❌ Ignorer le projet de soins palliatifs en urgence méconnaît les droits du patient. Les directives anticipées s'appliquent aussi en situation d'urgence. Un patient en fin de vie mérite une décision individualisée, pas une procédure uniforme.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q13",
+          phase: 'ambulance',
+          patient: null,
+          text: "Communication de crise : les médias sont présents devant les HUG et des images circulent sur les réseaux sociaux. Qui communique officiellement et que dit-on ?",
+          choices: [
+            { text: "La Direction des HUG via son responsable communication institutionnel, en coordination avec le Canton de Genève (DGS). Message : confirmation de l'activation du plan d'urgence, absence de victime à ce stade, évacuation préventive en cours, numéro d'information famille activé. Strict respect du secret médical — aucun nom de patient, aucun diagnostic.", correct: true },
+            { text: "Le médecin chef de l'intervention répond aux questions des journalistes entre deux évacuations", correct: false },
+            { text: "Ne faire aucune communication — éviter d'amplifier la panique", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La communication de crise institutionnelle est le rôle de la direction, pas des équipes médicales opérationnelles. En Suisse, la Loi sur la santé (LsanS GE) impose le secret médical absolu. Un numéro d'information famille réduit les appels désorganisés sur les lignes de secours. Le silence total amplifie les rumeurs.",
+            incorrect: "❌ Le médecin chef opérationnel ne doit pas être distrait par les médias pendant l'intervention. L'absence totale de communication crée un vide que les réseaux sociaux remplissent avec des informations fausses — parfois plus dangereuses que la réalité.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q14",
+          phase: 'ambulance',
+          patient: null,
+          text: "Retour à la normale : l'incendie est éteint après 3 heures. Les SIS autorisent la réintégration partielle du bâtiment. Quelle est la procédure de réintégration des patients ?",
+          choices: [
+            { text: "Évaluation technique de salubrité (qualité air, réseaux électriques/médicaux opérationnels) par les services techniques HUG + SIS avant toute réintégration. Rapatriement par ordre inverse d'évacuation (P3-P4 en premier car moins de matériel). Debriefing institutionnel sous 24h. Rapport d'incident transmis au Département de la santé GE.", correct: true },
+            { text: "Réintégration immédiate de tous les patients dès l'autorisation SIS — l'hôpital est opérationnel", correct: false },
+            { text: "Maintenir tous les patients dans les structures d'accueil pendant 48h par précaution", correct: false }
+          ],
+          feedback: {
+            correct: "✅ La réintégration requiert une validation technique préalable (air, électricité, gaz médicaux) avant de ramener des patients critiques. L'ordre inverse logique : P4 d'abord (lits simples), P1 en dernier (REA avec équipements complexes à revérifier). Le rapport d'incident alimente l'amélioration du plan PEGASE.",
+            incorrect: "❌ Réintégrer sans validation technique expose les patients à des risques résiduels (CO, circuits endommagés). Maintenir 48h en dehors crée une saturation prolongée inutile des structures d'accueil.",
+            naca: null
+          }
+        },
+        {
+          id: "CAT-04-Q15",
+          phase: 'ambulance',
+          patient: null,
+          text: "Bilan de l'exercice : 98 patients évacués en 3h15, 2 patients décédés en REA non liés à l'évacuation. Quel est l'enseignement clé d'une évacuation hospitalière réussie selon les principes PEGASE ?",
+          choices: [
+            { text: "La réussite repose sur : 1) un plan PEGASE connu et entraîné régulièrement par TOUT le personnel, 2) des fiches de transfert standardisées préparées à l'avance pour chaque patient critique, 3) des accords inter-hospitaliers régionaux activables en moins de 30 minutes, 4) une chaîne de commandement médicale claire, 5) des exercices annuels avec les partenaires (SIS, 144, hôpitaux receveurs)", correct: true },
+            { text: "L'improvisation est suffisante si le personnel est expérimenté — les plans sont trop rigides", correct: false },
+            { text: "La clé est d'avoir le maximum d'ambulances disponibles le jour J", correct: false }
+          ],
+          feedback: {
+            correct: "✅ L'évacuation hospitalière réussie repose sur la PRÉPARATION, pas sur l'improvisation. Les accords inter-hospitaliers (CHUV, HFR, Riviera-Chablais, Hôpital de la Tour) doivent être formalisés et testés. Les exercices PEGASE annuels sont obligatoires dans les hôpitaux de niveau III en Suisse. La compétence individuelle ne compense pas l'absence de plan.",
+            incorrect: "❌ L'improvisation en évacuation d'un hôpital de 2000 lits avec des patients ventilés est une recette pour le désastre. Le nombre d'ambulances est important mais secondaire sans coordination et sans fiches de transfert prépréparées.",
+            naca: null
+          }
+        }
+      ]
+    }
+
 
   ];
